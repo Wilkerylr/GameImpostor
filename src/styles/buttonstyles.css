@@ -1,0 +1,20 @@
+.StylesButton { 
+    background-color: rgb(206, 206, 209);
+    color: Black;
+    margin:3px;
+}
+
+.StylesContenedorButton{
+    display: flex;
+    flex-direction:column;
+    justify-content: center;
+}
+
+.StylesButtonReturn{
+    background-color: rgb(206, 206, 209);
+    color: Black;
+    margin:6px;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
