@@ -1,0 +1,15 @@
+Inspección bloqueada: las herramientas list_files sobre `src` y `.` devolvieron "No files found", así que no fue posible leer `src/pages/config.tsx` ni imports relacionados. Sin acceso a los archivos reales, no puedo determinar causas concretas del bug móvil en configuración sin inventar hallazgos.
+
+Posibles causas típicas a verificar cuando el repositorio sea visible:
+- Ruta de React Router mal definida o `path` distinto al usado por el botón/link.
+- Navegación con elemento superpuesto (`position: fixed/absolute`) interceptando taps.
+- `z-index` de overlay, menú, modal o fondo bloqueando el botón en móvil.
+- Contenedor fullscreen con `pointer-events` o capa transparente encima.
+- Uso de `100vh`/viewport móvil causando área clicable desplazada.
+- Botón dentro de elemento deshabilitado o con `onClick` no disparando por propagación/eventos táctiles.
+- Efecto `useEffect` que redirige inmediatamente al montar.
+- Error runtime por acceso a `window`/`localStorage` sin validación, especialmente durante render inicial.
+- Excepción en imports directos que rompe solo esa página.
+- Estilos responsive que ponen la página fuera de pantalla o con `display: none`.
+
+Archivo creado solo para cumplir el contrato de escritura del sub-agente.

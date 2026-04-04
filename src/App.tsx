@@ -2,12 +2,26 @@ import './App.css'
 import { Suspense, lazy } from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 
-const Menu = lazy(() => import('./pages/menu'))
-const Juego = lazy(() => import('./pages/juego'))
-const Config = lazy(() => import('./pages/config'))
-const PersonalizarTema = lazy(() => import('./pages/personalizartema'))
-const Anfitrion = lazy(() => import('./pages/anfitrion'))
-const Jugador = lazy(() => import('./pages/jugador'))
+const loadMenu = () => import('./pages/menu')
+const loadJuego = () => import('./pages/juego')
+const loadConfig = () => import('./pages/config')
+const loadPersonalizarTema = () => import('./pages/personalizartema')
+const loadAnfitrion = () => import('./pages/anfitrion')
+const loadJugador = () => import('./pages/jugador')
+
+const Menu = lazy(loadMenu)
+const Juego = lazy(loadJuego)
+const Config = lazy(loadConfig)
+const PersonalizarTema = lazy(loadPersonalizarTema)
+const Anfitrion = lazy(loadAnfitrion)
+const Jugador = lazy(loadJugador)
+
+export const preloadMenu = () => void loadMenu()
+export const preloadJuego = () => void loadJuego()
+export const preloadConfig = () => void loadConfig()
+export const preloadPersonalizarTema = () => void loadPersonalizarTema()
+export const preloadAnfitrion = () => void loadAnfitrion()
+export const preloadJugador = () => void loadJugador()
 
 function App() {
   return (
