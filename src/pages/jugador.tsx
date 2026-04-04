@@ -1,7 +1,6 @@
 import { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { Html5QrcodeScanner } from 'html5-qrcode';
-import CryptoJS from 'crypto-js';
+import type { Html5QrcodeScanner } from 'html5-qrcode';
 import BotonMenu from '../components/BotonMenu';
 import { useConfiguracion } from '../model/useConfiguracion';
 import '../styles/pages/Jugador.css';
@@ -26,7 +25,7 @@ export default function Jugador() {
   const [feedback, setFeedback] = useState('');
   const scannerRef = useRef<Html5QrcodeScanner | null>(null);
 
-  const iniciarEscaneo = () => {
+  const iniciarEscaneo = async () => {
     if (nombres.length === 0) {
       setFeedback('No hay nombres configurados. Ve a configuración para agregarlos.');
       return;
@@ -38,15 +37,25 @@ export default function Jugador() {
     }
 
     setEscaneando(true);
-    setFeedback('Escaneando...');
+    setFeedback('Cargando cámara...');
 
-    scannerRef.current = new Html5QrcodeScanner(
-      'qr-reader',
-      { fps: 10, qrbox: { width: 250, height: 250 } },
-      false
-    );
+    try {
+      const [{ Html5QrcodeScanner }] = await Promise.all([
+        import('html5-qrcode')
+      ]);
 
-    scannerRef.current.render(onScanSuccess, onScanFailure);
+      scannerRef.current = new Html5QrcodeScanner(
+        'qr-reader',
+        { fps: 10, qrbox: { width: 250, height: 250 } },
+        false
+      );
+
+      setFeedback('Escaneando...');
+      scannerRef.current.render(onScanSuccess, onScanFailure);
+    } catch {
+      setEscaneando(false);
+      setFeedback('No se pudo cargar el lector QR en este dispositivo.');
+    }
   };
 
   const detenerEscaneo = () => {
@@ -57,8 +66,9 @@ export default function Jugador() {
     setEscaneando(false);
   };
 
-  const onScanSuccess = (decodedText: string) => {
+  const onScanSuccess = async (decodedText: string) => {
     try {
+      const CryptoJS = (await import('crypto-js')).default;
       const enmascarado = atob(decodedText);
       const key = CryptoJS.enc.Utf8.parse(llavePartida.padEnd(16, '0').slice(0, 16));
       const decrypted = CryptoJS.AES.decrypt(enmascarado, key, {

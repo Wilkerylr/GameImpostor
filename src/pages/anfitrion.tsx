@@ -1,7 +1,5 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import QRCode from 'qrcode';
-import CryptoJS from 'crypto-js';
 import { useConfiguracion } from '../model/useConfiguracion';
 import { obtenerLista } from '../model/obtenerLista';
 import BotonMenu from '../components/BotonMenu';
@@ -91,13 +89,15 @@ export default function Anfitrion() {
     setAsignaciones(nuevaAsignacion);
 
     const datosQr = prepararDatosQr(nuevaAsignacion);
-    const enmascarado = enmascararDatos(datosQr, llavePartida);
+    const enmascarado = await enmascararDatos(datosQr, llavePartida);
     const base64 = btoa(enmascarado);
+    const { default: QRCode } = await import('qrcode');
     const qr = await QRCode.toDataURL(base64, { width: 320 });
     setQrDataUrl(qr);
   };
 
-  const enmascararDatos = (datos: string, llave: string): string => {
+  const enmascararDatos = async (datos: string, llave: string): Promise<string> => {
+    const CryptoJS = (await import('crypto-js')).default;
     const key = CryptoJS.enc.Utf8.parse(llave.padEnd(16, '0').slice(0, 16));
     const encrypted = CryptoJS.AES.encrypt(datos, key, {
       mode: CryptoJS.mode.ECB,
@@ -126,8 +126,9 @@ export default function Anfitrion() {
 
     setError('');
     const datosQr = prepararDatosQr(asignaciones);
-    const enmascarado = enmascararDatos(datosQr, llavePartida);
+    const enmascarado = await enmascararDatos(datosQr, llavePartida);
     const base64 = btoa(enmascarado);
+    const { default: QRCode } = await import('qrcode');
     const qr = await QRCode.toDataURL(base64, { width: 320 });
     setQrDataUrl(qr);
   };
