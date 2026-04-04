@@ -33,9 +33,10 @@ export default function Menu() {
                     </svg>
                     Modo Jugador
                 </Link>
+                
+                */}
                 <Link to="/config" className="menu-btn-secundario">Configuración</Link>
                 <Link to="/personalizartema" className="menu-btn-secundario">Personalizar temas</Link>
-                */}
             </div>
 
             <BotonAyuda />
