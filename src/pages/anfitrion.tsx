@@ -6,7 +6,7 @@ import {
   construirPaquetePartida, 
   serializarPaquetePartida, 
   generarPartidaId,
-  JugadorAsignado 
+  type JugadorAsignado 
 } from '../model/multiDispositivo'; // Asegúrate de que la ruta sea correcta
 import BotonMenu from '../components/BotonMenu';
 import '../styles/pages/Anfitrion.css';
