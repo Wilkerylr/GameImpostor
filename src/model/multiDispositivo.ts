@@ -7,8 +7,8 @@ export interface JugadorAsignado {
 }
 
 export interface PaqueteJugadorQR {
-  hash: string; // Identificador anonimizado del jugador
-  data: string; // Datos cifrados (rol y palabra)
+  hash: string;
+  data: string;
 }
 
 export interface PaquetePartidaQR {
@@ -17,7 +17,7 @@ export interface PaquetePartidaQR {
   players: PaqueteJugadorQR[];
 }
 
-// --- UTILIDADES INTERNAS ---
+// --- UTILIDADES DE ENCODING ROBUSTAS ---
 
 const normalizarNombre = (valor: string) =>
   valor
@@ -37,17 +37,23 @@ const mezclarCadena = (texto: string, llave: string) => {
   return resultado;
 };
 
-const aBase64 = (texto: string) => btoa(unescape(encodeURIComponent(texto)));
-const desdeBase64 = (texto: string) => decodeURIComponent(escape(atob(texto)));
+// Reemplazo de btoa/atob antiguo para evitar errores de caracteres especiales en móviles
+const aBase64 = (texto: string) => {
+  const bytes = new TextEncoder().encode(texto);
+  const binario = Array.from(bytes, (byte) => String.fromCharCode(byte)).join('');
+  return btoa(binario);
+};
+
+const desdeBase64 = (base64: string) => {
+  const binario = atob(base64);
+  const bytes = new Uint8Array(Array.from(binario, (char) => char.charCodeAt(0)));
+  return new TextDecoder().decode(bytes);
+};
 
 // --- FUNCIONES EXPORTADAS ---
 
 export const generarPartidaId = () => Math.floor(1000 + Math.random() * 9000);
 
-/**
- * Crea un hash único para el jugador basado en su nombre y el ID de la partida.
- * Esto permite al móvil del jugador encontrar su "espacio" en el QR sin leer nombres ajenos.
- */
 export const generarHashJugador = async (nombre: string, partidaId: number): Promise<string> => {
   const texto = `${normalizarNombre(nombre)}|${partidaId}`;
   const data = new TextEncoder().encode(texto);
@@ -59,49 +65,33 @@ export const generarHashJugador = async (nombre: string, partidaId: number): Pro
     .slice(0, 24);
 };
 
-/**
- * Cifra la información privada (rol/palabra) usando el nombre+id como llave XOR.
- */
 export const cifrarAsignacionJugador = (jugador: JugadorAsignado, partidaId: number) => {
-  const nombreNormalizado = normalizarNombre(jugador.nombre);
-  const llave = `${nombreNormalizado}|${partidaId}`;
-  const payload = JSON.stringify({
-    nombre: jugador.nombre,
-    rol: jugador.rol,
-    palabra: jugador.palabra
-  });
-
+  const llave = `${normalizarNombre(jugador.nombre)}|${partidaId}`;
+  const payload = JSON.stringify(jugador);
   return aBase64(mezclarCadena(payload, llave));
 };
 
-/**
- * Proceso inverso: Descifra los datos si la llave (nombre del jugador) coincide.
- */
 export const descifrarAsignacionJugador = (
   data: string,
   nombreJugador: string,
   partidaId: number
 ): JugadorAsignado | null => {
   try {
-    const nombreNormalizado = normalizarNombre(nombreJugador);
-    const llave = `${nombreNormalizado}|${partidaId}`;
-    const payload = mezclarCadena(desdeBase64(data), llave);
-    const parsed = JSON.parse(payload) as JugadorAsignado;
+    const llave = `${normalizarNombre(nombreJugador)}|${partidaId}`;
+    const descifrado = mezclarCadena(desdeBase64(data), llave);
+    const parsed = JSON.parse(descifrado) as JugadorAsignado;
 
-    // Validación de seguridad: el nombre dentro del paquete debe ser el mismo
-    if (normalizarNombre(parsed.nombre) !== nombreNormalizado) {
+    if (normalizarNombre(parsed.nombre) !== normalizarNombre(nombreJugador)) {
+      console.error("El nombre descifrado no coincide");
       return null;
     }
-
     return parsed;
-  } catch {
+  } catch (e) {
+    console.error("Error en descifrado XOR/JSON:", e);
     return null;
   }
 };
 
-/**
- * Crea el paquete completo que el Anfitrión convertirá en un solo código QR.
- */
 export const construirPaquetePartida = async (
   jugadores: JugadorAsignado[],
   partidaId: number
@@ -113,31 +103,24 @@ export const construirPaquetePartida = async (
     }))
   );
 
-  return {
-    version: 2,
-    partidaId,
-    players
-  };
+  return { version: 2, partidaId, players };
 };
 
 export const serializarPaquetePartida = (paquete: PaquetePartidaQR) =>
   aBase64(JSON.stringify(paquete));
 
 export const parsearPaquetePartida = (textoQR: string): PaquetePartidaQR => {
-  const contenido = desdeBase64(textoQR);
+  // Limpieza de posibles espacios o saltos de línea del lector QR
+  const contenido = desdeBase64(textoQR.trim());
   const parsed = JSON.parse(contenido) as PaquetePartidaQR;
 
   if (parsed.version !== 2 || !Array.isArray(parsed.players)) {
-    throw new Error('Paquete QR incompatible o versión antigua');
+    throw new Error('Paquete QR incompatible');
   }
 
   return parsed;
 };
 
-/**
- * Función principal que usa el componente JUGADOR.
- * Recibe el texto del QR escaneado y el nombre que el usuario escribió.
- */
 export const obtenerAsignacionParaJugador = async (
   textoQR: string,
   nombreJugador: string
@@ -146,15 +129,21 @@ export const obtenerAsignacionParaJugador = async (
     const paquete = parsearPaquetePartida(textoQR);
     const hashBuscado = await generarHashJugador(nombreJugador, paquete.partidaId);
     
-    // Busca en la lista de jugadores cifrados el que coincida con el hash del nombre
+    // DEBUG LOGS (Ver en consola de navegador móvil si es posible)
+    console.log("ID Partida:", paquete.partidaId);
+    console.log("Nombre Buscado:", normalizarNombre(nombreJugador));
+    console.log("Hash Generado:", hashBuscado);
+
     const entrada = paquete.players.find((p) => p.hash === hashBuscado);
 
-    if (!entrada) return null;
+    if (!entrada) {
+      console.warn("No se encontró el hash en la lista del QR");
+      return null;
+    }
 
-    // Si lo encuentra, intenta descifrar su rol y palabra
     return descifrarAsignacionJugador(entrada.data, nombreJugador, paquete.partidaId);
   } catch (e) {
-    console.error("Error al obtener asignación:", e);
+    console.error("Error crítico en obtenerAsignacion:", e);
     return null;
   }
 };
