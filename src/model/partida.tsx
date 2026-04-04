@@ -1,34 +1,36 @@
-import { ConfiguracionPredeterminada } from "../controller/configpredeterminada";
+// Orquestador principal de la partida:
+// - Controla la fase actual ('config' | 'asignacion' | 'juego')
+// - Conecta useConfiguracion, useAsignacion y useVotacion
+// - Expone avanzarFase() para transicionar entre fases
+// - Es el único hook que pages/juego.tsx necesita consumir
+
 import { useState } from "react";
+import { useConfiguracion } from "./useConfiguracion";
+import { useAsignacion } from "./useAsignacion";
 
-function calcularConfiguracion() {
-    const configuracionactual = ConfiguracionPredeterminada;
-    let jugadores = configuracionactual.cantidadJugadores;
-    let impostores = configuracionactual.cantidadImpostores;
+export type Fase = 'config' | 'asignacion' | 'juego';
 
-    // Validaciones:
-    // 1. Mínimo 3 jugadores (2 normales + 1 impostor)
-    if (jugadores < 3) jugadores = 3;
-    
-    // 2. Máximo 3 impostores
-    if (impostores > 3) impostores = 3;
-    
-    // 3. Impostores debe ser menor que jugadores (mínimo 2 jugadores normales)
-    if (impostores >= jugadores - 1) {
-        impostores = Math.max(1, jugadores - 2);
-    }
-    
-    // 4. Mínimo 1 impostor
-    if (impostores < 1) impostores = 1;
+export function usePartida() {
+    const [fase, setFase] = useState<Fase>(() =>
+        (sessionStorage.getItem('partida_fase') as Fase) || 'config'
+    );
 
-    return { jugadores, impostores };
-}
+    const configuracion = useConfiguracion();
+    const asignacion = useAsignacion(configuracion.jugadores, configuracion.impostores);
 
-export function useCargarConfig() {
-    const [config] = useState(() => calcularConfiguracion());
-    return config;
-}
+    const avanzarFase = () => {
+        setFase(f => {
+            const siguiente = f === 'config' ? 'asignacion' : 'juego';
+            sessionStorage.setItem('partida_fase', siguiente);
+            return siguiente;
+        });
+    };
 
-export default function Partida() {
-    
+    const reiniciarPartida = () => {
+        asignacion.reiniciar();
+        sessionStorage.setItem('partida_fase', 'asignacion');
+        setFase('asignacion');
+    };
+
+    return { fase, avanzarFase, reiniciarPartida, configuracion, asignacion };
 }

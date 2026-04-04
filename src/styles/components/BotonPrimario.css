@@ -1,0 +1,32 @@
+/* Botón primario pill con color acento. Usado como acción principal en fases del juego. */
+
+.btn-primario {
+    padding: 0.85rem 2.5rem;
+    border-radius: 999px;
+    background-color: var(--accent);
+    border: none;
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.2s;
+    box-shadow: 0 4px 20px var(--accent-glow);
+}
+.btn-primario:hover:not(:disabled) {
+    background-color: var(--accent-hover);
+    transform: scale(1.02);
+}
+.btn-primario:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* Móviles pequeños */
+@media (max-width: 360px) {
+    .btn-primario { padding: 0.75rem 1.8rem; font-size: 0.9rem; }
+}
+
+/* TV y pantallas grandes */
+@media (min-width: 1200px) {
+    .btn-primario { padding: 1rem 3rem; font-size: 1.2rem; }
+}

@@ -1,0 +1,95 @@
+/* Botón fijo pill en esquina superior izquierda para salir/volver al menú. Compartido por BotonSalir y BotonMenu. */
+
+.salir-btn {
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.9rem;
+    border-radius: 999px;
+    background-color: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+    z-index: 5;
+}
+.salir-btn:hover {
+    border-color: var(--border-hover);
+    color: var(--text-primary);
+}
+
+.salir-overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    padding: 1rem;
+}
+
+.salir-panel {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 2rem;
+    max-width: 340px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    box-sizing: border-box;
+}
+.salir-panel h2 { margin: 0; font-size: 1.2rem; color: var(--text-primary); }
+.salir-panel p  { margin: 0; font-size: 0.95rem; line-height: 1.5; color: var(--text-secondary); }
+
+.salir-acciones {
+    display: flex;
+    gap: 0.8rem;
+    justify-content: flex-end;
+}
+
+.salir-cancelar {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    border-radius: 8px;
+    padding: 0.4rem 1rem;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+}
+.salir-cancelar:hover {
+    border-color: var(--border-hover);
+    color: var(--text-primary);
+}
+
+.salir-confirmar {
+    background: var(--danger);
+    border: none;
+    color: white;
+    border-radius: 8px;
+    padding: 0.4rem 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+.salir-confirmar:hover { background-color: var(--danger-hover); }
+
+/* Móviles pequeños */
+@media (max-width: 360px) {
+    .salir-btn { font-size: 0.78rem; padding: 0.35rem 0.7rem; }
+    .salir-panel { padding: 1.5rem; }
+}
+
+/* TV y pantallas grandes */
+@media (min-width: 1200px) {
+    .salir-btn { font-size: 1rem; padding: 0.55rem 1.2rem; top: 1.5rem; left: 1.5rem; }
+    .salir-panel { max-width: 420px; padding: 2.5rem; }
+    .salir-panel h2 { font-size: 1.5rem; }
+    .salir-panel p { font-size: 1.05rem; }
+    .salir-cancelar, .salir-confirmar { padding: 0.6rem 1.4rem; font-size: 1rem; }
+}

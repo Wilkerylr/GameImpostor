@@ -1,0 +1,135 @@
+/* Fase de discusión activa: lista de jugadores, temporizador lateral opcional y botón para pasar a votación. */
+
+.juego-contenedor {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 2rem;
+    position: relative;
+}
+
+.juego-turno { display: flex; flex-direction: column; align-items: center; gap: 0.4rem; }
+
+.juego-turno-numero {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.juego-turno-nombre {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.juego-instruccion { color: var(--text-secondary); font-size: 0.95rem; margin: 0; }
+
+.juego-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+    max-width: 480px;
+}
+
+.juego-jugador {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.8rem 1.2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.juego-jugador-activo {
+    border-color: var(--accent);
+    background-color: var(--accent-subtle);
+}
+
+.juego-jugador-nombre { font-size: 1rem; color: var(--text-primary); }
+.juego-jugador-turno  { font-size: 0.75rem; color: var(--accent); }
+
+.juego-cuerpo {
+    display: flex;
+    align-items: stretch;
+    gap: 1rem;
+    width: 100%;
+    max-width: 560px;
+    justify-content: center;
+}
+
+.juego-temporizador {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background-color: var(--bg-card-dark);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.5rem 0.8rem;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+.juego-temporizador-tiempo {
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: var(--accent);
+}
+
+.juego-temporizador-label {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+.juego-btn-votar {
+    background-color: var(--accent);
+    border: none;
+    color: white;
+    border-radius: 999px;
+    padding: 0.7rem 2rem;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.2s;
+    box-shadow: 0 4px 16px var(--accent-glow);
+}
+.juego-btn-votar:hover {
+    background-color: var(--accent-hover);
+    transform: scale(1.03);
+}
+
+/* Móviles pequeños */
+@media (max-width: 360px) {
+    .juego-contenedor { padding: 1rem 0.75rem; gap: 1rem; }
+    .juego-turno-nombre { font-size: 1.5rem; }
+    .juego-instruccion { font-size: 0.85rem; }
+    .juego-jugador { padding: 0.65rem 0.9rem; }
+    .juego-jugador-nombre { font-size: 0.9rem; }
+    .juego-temporizador { padding: 1rem 0.6rem; }
+    .juego-temporizador-tiempo { font-size: 1.1rem; }
+    .juego-btn-votar { padding: 0.65rem 1.5rem; font-size: 0.9rem; }
+}
+
+/* TV y pantallas grandes */
+@media (min-width: 1200px) {
+    .juego-contenedor { padding: 3rem; gap: 2rem; }
+    .juego-turno-nombre { font-size: 3rem; }
+    .juego-turno-numero { font-size: 1.1rem; }
+    .juego-instruccion { font-size: 1.1rem; }
+    .juego-cuerpo { max-width: 720px; gap: 1.5rem; }
+    .juego-lista { max-width: 600px; }
+    .juego-jugador { padding: 1rem 1.5rem; border-radius: 12px; }
+    .juego-jugador-nombre { font-size: 1.2rem; }
+    .juego-jugador-turno { font-size: 0.9rem; }
+    .juego-temporizador { padding: 2rem 1.2rem; border-radius: 20px; }
+    .juego-temporizador-tiempo { font-size: 2rem; }
+    .juego-temporizador-label { font-size: 0.8rem; }
+    .juego-btn-votar { font-size: 1.2rem; padding: 0.9rem 2.5rem; }
+}

@@ -1,20 +1,20 @@
-export const promptGenerarLista = `Genera un arreglo JSON de exactamente 100 palabras relacionadas con el tema: "[TEMA]". 
+export const promptGenerarLista = `Genera un arreglo JSON de exactamente 100 palabras relacionadas con el tema: "[TEMA]".
 
-Cada elemento debe tener esta estructura:
-{ palabra: "nombre", pista: "palabra ambigua" }
+Cada elemento debe tener EXACTAMENTE esta estructura con comillas dobles:
+{ "palabra": "nombre", "pista": "palabra ambigua" }
 
 Requisitos:
 - La pista debe ser UNA SOLA PALABRA o máximo DOS palabras muy ambiguas
 - La pista NO debe ser específica, debe aplicar a múltiples cosas
 - Debe ser extremadamente difícil adivinar solo con la pista
-- Formato JSON válido
+- Formato JSON estrictamente válido, sin comentarios, sin texto adicional
 - Exactamente 100 elementos
 
 Ejemplo de salida:
 [
-  { palabra: "Pikachu", pista: "Eléctrico" },
-  { palabra: "Naruto", pista: "Ninja" },
-  { palabra: "Goku", pista: "Poder" }
+  { "palabra": "Pikachu", "pista": "Eléctrico" },
+  { "palabra": "Naruto", "pista": "Ninja" },
+  { "palabra": "Goku", "pista": "Poder" }
 ]`;
 
 export default function listaPredeterminada() {

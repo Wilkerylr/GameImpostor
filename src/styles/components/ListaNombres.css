@@ -1,0 +1,86 @@
+/* Lista editable de nombres de jugadores con input para agregar y botón para eliminar cada uno. */
+
+.nombres-contenedor {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.2rem 1rem;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.nombres-label {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.nombres-input-fila { display: flex; gap: 0.5rem; }
+
+.nombres-input-fila input {
+    flex: 1;
+    background-color: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.5rem 0.8rem;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.2s;
+}
+.nombres-input-fila input:focus   { border-color: var(--accent); }
+.nombres-input-fila input:disabled { opacity: 0.4; }
+
+.nombres-input-fila button {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    border: 1px solid var(--accent);
+    background: transparent;
+    color: var(--accent);
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    line-height: 1;
+}
+.nombres-input-fila button:hover:not(:disabled) {
+    background-color: var(--accent);
+    color: white;
+}
+.nombres-input-fila button:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    border-color: var(--border);
+    color: var(--border);
+}
+
+.nombres-lista { display: flex; flex-direction: column; gap: 0.4rem; }
+
+.nombres-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--bg-input);
+    border-radius: 8px;
+    padding: 0.4rem 0.8rem;
+}
+.nombres-item span { font-size: 0.95rem; color: var(--text-primary); }
+
+.nombres-eliminar {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 0.85rem;
+    padding: 0;
+    transition: color 0.2s;
+}
+.nombres-eliminar:hover { color: var(--danger); }

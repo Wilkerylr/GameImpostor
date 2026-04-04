@@ -1,0 +1,85 @@
+/* Contador numérico con botones +/- para configurar jugadores e impostores. */
+
+.contador-config {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem 2rem;
+    width: 100%;
+    max-width: 500px;
+    box-sizing: border-box;
+}
+
+.contador-label {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.contador-controles {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.contador-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid var(--accent);
+    background-color: transparent;
+    color: var(--accent);
+    font-size: 1.4rem;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.contador-btn:hover:not(:disabled) {
+    background-color: var(--accent);
+    color: white;
+}
+.contador-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    border-color: var(--border);
+    color: var(--border);
+}
+
+.contador-valor {
+    font-size: 2rem;
+    font-weight: 700;
+    min-width: 2rem;
+    text-align: center;
+    color: var(--text-primary);
+}
+
+.contador-error {
+    font-size: 0.8rem;
+    color: var(--danger);
+    margin: 0;
+}
+
+/* Móviles pequeños */
+@media (max-width: 360px) {
+    .contador-config { padding: 1rem; gap: 0.5rem; }
+    .contador-label { font-size: 0.85rem; }
+    .contador-btn { width: 32px; height: 32px; font-size: 1.1rem; }
+    .contador-valor { font-size: 1.5rem; }
+}
+
+/* TV y pantallas grandes */
+@media (min-width: 1200px) {
+    .contador-config { padding: 2rem 2.5rem; gap: 1rem; }
+    .contador-label { font-size: 1.1rem; }
+    .contador-btn { width: 50px; height: 50px; font-size: 1.6rem; }
+    .contador-valor { font-size: 2.5rem; }
+}

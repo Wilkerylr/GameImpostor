@@ -1,0 +1,179 @@
+/* Fase de votación: lista de jugadores activos, modal de confirmación, pantalla de adivinanza e impostor y pantalla de resultado final. */
+
+.votacion-contenedor {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 2rem;
+}
+
+.votacion-titulo { font-size: 1.8rem; font-weight: 700; margin: 0; color: var(--text-primary); }
+.votacion-subtitulo { font-size: 0.9rem; color: var(--text-secondary); margin: 0; }
+
+.votacion-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    width: 100%;
+    max-width: 480px;
+}
+
+.votacion-item {
+    position: relative;
+    overflow: hidden;
+    border-radius: 12px;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border);
+    cursor: pointer;
+    user-select: none;
+    transition: border-color 0.2s;
+}
+.votacion-item:hover { border-color: var(--accent); }
+
+.votacion-item-frente {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.2rem;
+}
+
+.votacion-item-nombre { font-size: 1rem; font-weight: 500; color: var(--text-primary); }
+
+.votacion-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    padding: 1rem;
+}
+
+.votacion-modal {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 2rem;
+    max-width: 320px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: center;
+    text-align: center;
+    box-sizing: border-box;
+}
+.votacion-modal h2 { margin: 0; font-size: 1.2rem; color: var(--text-primary); }
+.votacion-modal p  { margin: 0; color: var(--text-secondary); font-size: 0.9rem; }
+
+.votacion-modal-nombre { font-size: 1.4rem; font-weight: 700; color: var(--text-primary); }
+
+.votacion-modal-acciones { display: flex; gap: 0.8rem; width: 100%; }
+
+.votacion-modal-cancelar {
+    flex: 1;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    border-radius: 8px;
+    padding: 0.6rem;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+}
+.votacion-modal-cancelar:hover { border-color: var(--border-hover); color: var(--text-primary); }
+
+.votacion-modal-confirmar {
+    flex: 1;
+    background: var(--accent);
+    border: none;
+    color: white;
+    border-radius: 8px;
+    padding: 0.6rem;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.2s;
+}
+.votacion-modal-confirmar:hover { background-color: var(--accent-hover); }
+
+.adivinanza-contenedor {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.2rem;
+    background-color: var(--bg-card-dark);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 2rem;
+    max-width: 480px;
+    width: 100%;
+    box-sizing: border-box;
+}
+.adivinanza-contenedor h2 { margin: 0; font-size: 1.3rem; color: var(--text-primary); }
+.adivinanza-contenedor p  { margin: 0; color: var(--text-secondary); font-size: 0.9rem; text-align: center; }
+
+.adivinanza-input {
+    width: 100%;
+    background-color: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.7rem 1rem;
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    outline: none;
+    transition: border-color 0.2s;
+    text-align: center;
+    box-sizing: border-box;
+}
+.adivinanza-input:focus { border-color: var(--accent); }
+
+.resultado-contenedor {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    text-align: center;
+}
+
+.resultado-emoji   { font-size: 4rem; }
+.resultado-titulo  { font-size: 2rem; font-weight: 800; margin: 0; color: var(--text-primary); }
+.resultado-subtitulo { color: var(--text-secondary); margin: 0; font-size: 0.95rem; }
+
+.resultado-impostor { color: var(--text-secondary); margin: 0; font-size: 0.95rem; }
+.resultado-impostor strong { color: var(--accent); }
+
+.resultado-acciones { display: flex; gap: 0.8rem; margin-top: 0.5rem; flex-wrap: wrap; justify-content: center; }
+
+/* Móviles pequeños */
+@media (max-width: 360px) {
+    .votacion-contenedor { padding: 1rem 0.75rem; gap: 1rem; }
+    .votacion-titulo { font-size: 1.4rem; }
+    .votacion-item-frente { padding: 0.75rem 1rem; }
+    .votacion-item-nombre { font-size: 0.9rem; }
+    .adivinanza-contenedor { padding: 1.2rem 1rem; }
+    .adivinanza-contenedor h2 { font-size: 1.1rem; }
+    .resultado-emoji { font-size: 3rem; }
+    .resultado-titulo { font-size: 1.5rem; }
+    .resultado-acciones { flex-direction: column; width: 100%; }
+    .votacion-modal-cancelar, .votacion-modal-confirmar { padding: 0.5rem; font-size: 0.9rem; }
+}
+
+/* TV y pantallas grandes */
+@media (min-width: 1200px) {
+    .votacion-contenedor { padding: 3rem; gap: 2rem; }
+    .votacion-titulo { font-size: 2.5rem; }
+    .votacion-subtitulo { font-size: 1.1rem; }
+    .votacion-lista { max-width: 600px; }
+    .votacion-item-frente { padding: 1.2rem 1.5rem; }
+    .votacion-item-nombre { font-size: 1.2rem; }
+    .votacion-modal { max-width: 420px; padding: 2.5rem; }
+    .votacion-modal h2 { font-size: 1.5rem; }
+    .votacion-modal-nombre { font-size: 1.8rem; }
+    .adivinanza-contenedor { max-width: 600px; padding: 2.5rem; }
+    .adivinanza-contenedor h2 { font-size: 1.6rem; }
+    .adivinanza-input { font-size: 1.3rem; }
+    .resultado-emoji { font-size: 5rem; }
+    .resultado-titulo { font-size: 2.8rem; }
+    .resultado-subtitulo, .resultado-impostor { font-size: 1.1rem; }
+}
