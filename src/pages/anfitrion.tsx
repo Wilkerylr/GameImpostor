@@ -34,6 +34,7 @@ export default function Anfitrion() {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
+  // Cambiado: Ahora persistimos también el partidaId para evitar desincronización
   useEffect(() => {
     if (!asignaciones.length || !qrDataUrl) return;
     sessionStorage.setItem('anfitrion_asignaciones', JSON.stringify(asignaciones));
@@ -41,69 +42,67 @@ export default function Anfitrion() {
   }, [asignaciones, qrDataUrl]);
 
   const generarRoles = async () => {
-    const nombresValidos = nombres.filter(n => n.trim()).slice(0, jugadores);
+    // 1. Limpieza estricta de nombres
+    const nombresValidos = nombres
+      .map(n => n.trim())
+      .filter(n => n !== '')
+      .slice(0, jugadores);
     
     if (nombresValidos.length < jugadores) {
-      setError(`Faltan nombres. Configura ${jugadores} jugadores en el menú anterior.`);
-      return;
-    }
-
-    if (impostores < 1 || impostores >= jugadores) {
-      setError('La configuración de impostores no es válida.');
+      setError(`Faltan nombres. Asegúrate de llenar los ${jugadores} campos.`);
       return;
     }
 
     const lista = obtenerLista();
     if (!lista.length) {
-      setError('No hay palabras disponibles. Revisa la configuración de temas.');
+      setError('No hay palabras disponibles.');
       return;
     }
 
     setError('');
 
-    // Lógica de selección de palabras
+    // 2. Selección de palabra/pista
     const historial: string[] = JSON.parse(sessionStorage.getItem('historial_palabras') || '[]');
     const entrada = obtenerEntradaAleatoria(lista, historial);
     const nuevoHistorial = [entrada.palabra, ...historial].slice(0, 15);
     sessionStorage.setItem('historial_palabras', JSON.stringify(nuevoHistorial));
 
-    // Asignación de Roles
+    // 3. Generar Roles (Mezclamos los roles, no los nombres)
     const roles = mezclar([
-      ...Array(impostores).fill('impostor' as const),
-      ...Array(jugadores - impostores).fill('inocente' as const)
-    ]) as Array<'inocente' | 'impostor'>;
+      ...Array(impostores).fill('impostor'),
+      ...Array(jugadores - impostores).fill('inocente')
+    ]) as ('inocente' | 'impostor')[];
 
-    const nombresOrdenados = mezclar(nombresValidos);
-    const nuevaAsignacion: JugadorAsignado[] = nombresOrdenados.map((nombre, index) => ({
-      nombre,
+    // 4. Crear Asignación (Mantenemos el nombre original del estado para evitar fallos de escritura)
+    const nuevaAsignacion: JugadorAsignado[] = nombresValidos.map((nombre, index) => ({
+      nombre: nombre, // Importante: Usar el nombre tal cual se configuró
       rol: roles[index],
       palabra: roles[index] === 'inocente' ? entrada.palabra : entrada.pista
     }));
 
-    setAsignaciones(nuevaAsignacion);
-
     try {
-      // --- NUEVA LÓGICA DE PAQUETE QR ---
+      // 5. Generar ID único de esta partida
       const partidaId = generarPartidaId();
+      
+      // IMPORTANTE: Construir el paquete con las asignaciones recién creadas
       const paquete = await construirPaquetePartida(nuevaAsignacion, partidaId);
       const stringParaQR = serializarPaquetePartida(paquete);
 
-      // Generar el QR visual
       const { default: QRCode } = await import('qrcode');
-      // Usamos errorCorrectionLevel: 'L' para que sea más fácil de leer en móviles
+      // Subimos el nivel de corrección a 'M' para un balance entre densidad y lectura
       const qr = await QRCode.toDataURL(stringParaQR, { 
-        width: 400, 
+        width: 450, 
         margin: 2,
-        errorCorrectionLevel: 'L' 
+        errorCorrectionLevel: 'M' 
       });
       
+      setAsignaciones(nuevaAsignacion);
       setQrDataUrl(qr);
     } catch (err) {
       console.error(err);
-      setError('Error al generar el paquete de seguridad de la partida.');
+      setError('Error al generar el QR maestro.');
     }
   };
-
   const descargarQR = () => {
     if (!qrDataUrl) return;
     const link = document.createElement('a');
