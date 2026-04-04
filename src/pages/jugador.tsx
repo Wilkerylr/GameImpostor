@@ -106,8 +106,9 @@ export default function Jugador() {
       {!rol ? (
         <div className="jugador-formulario">
           <div className="jugador-campo">
-            <label>Llave de Partida</label>
+            <label htmlFor="jugador-llave">Llave de Partida</label>
             <input
+              id="jugador-llave"
               type="text"
               value={llavePartida}
               onChange={(e) => setLlavePartida(e.target.value)}
@@ -117,9 +118,10 @@ export default function Jugador() {
           </div>
 
           <div className="jugador-campo">
-            <label>Tu Nombre</label>
+            <label htmlFor="jugador-nombre">Tu Nombre</label>
             {nombres.length > 0 ? (
               <select
+                id="jugador-nombre"
                 value={nombreUsuario}
                 onChange={(e) => setNombreUsuario(e.target.value)}
                 disabled={escaneando}

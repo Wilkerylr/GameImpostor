@@ -13,6 +13,21 @@ interface JugadorAsignado {
   palabra: string;
 }
 
+interface EntradaLista {
+  palabra: string;
+  pista: string;
+}
+
+const obtenerEntradaAleatoria = (lista: EntradaLista[], historial: string[]): EntradaLista => {
+  const disponibles = lista.filter((elemento) => !historial.includes(elemento.palabra));
+  const opciones = disponibles.length > 0 ? disponibles : lista;
+  return opciones[Math.floor(Math.random() * opciones.length)];
+};
+
+const mezclar = <T,>(elementos: T[]): T[] => [...elementos].sort(() => Math.random() - 0.5);
+
+const prepararDatosQr = (asignaciones: JugadorAsignado[]): string => JSON.stringify({ players: asignaciones, salt: Date.now() });
+
 export default function Anfitrion() {
   const { jugadores, impostores, nombres } = useConfiguracion();
   const [llavePartida, setLlavePartida] = useState(() => sessionStorage.getItem('anfitrion_llavePartida') || '');
@@ -57,17 +72,16 @@ export default function Anfitrion() {
     setError('');
 
     const historial: string[] = JSON.parse(sessionStorage.getItem('historial_palabras') || '[]');
-    const disponibles = lista.filter(e => !historial.includes(e.palabra));
-    const entrada = (disponibles.length > 0 ? disponibles : lista)[Math.floor(Math.random() * (disponibles.length > 0 ? disponibles.length : lista.length))];
+    const entrada = obtenerEntradaAleatoria(lista, historial);
     const nuevoHistorial = [entrada.palabra, ...historial].slice(0, 15);
     sessionStorage.setItem('historial_palabras', JSON.stringify(nuevoHistorial));
 
-    const roles = [
+    const roles = mezclar([
       ...Array(impostores).fill('impostor' as const),
       ...Array(jugadores - impostores).fill('inocente' as const)
-    ].sort(() => Math.random() - 0.5) as Array<'inocente' | 'impostor'>;
+    ]) as Array<'inocente' | 'impostor'>;
 
-    const nombresOrdenados = [...nombresValidos].sort(() => Math.random() - 0.5);
+    const nombresOrdenados = mezclar(nombresValidos);
     const nuevaAsignacion = nombresOrdenados.map((nombre, index) => ({
       nombre,
       rol: roles[index],
@@ -76,7 +90,7 @@ export default function Anfitrion() {
 
     setAsignaciones(nuevaAsignacion);
 
-    const datosQr = JSON.stringify({ players: nuevaAsignacion, salt: Date.now() });
+    const datosQr = prepararDatosQr(nuevaAsignacion);
     const enmascarado = enmascararDatos(datosQr, llavePartida);
     const base64 = btoa(enmascarado);
     const qr = await QRCode.toDataURL(base64, { width: 320 });
@@ -111,7 +125,7 @@ export default function Anfitrion() {
     }
 
     setError('');
-    const datosQr = JSON.stringify({ players: asignaciones, salt: Date.now() });
+    const datosQr = prepararDatosQr(asignaciones);
     const enmascarado = enmascararDatos(datosQr, llavePartida);
     const base64 = btoa(enmascarado);
     const qr = await QRCode.toDataURL(base64, { width: 320 });
@@ -128,8 +142,9 @@ export default function Anfitrion() {
       {!qrDataUrl ? (
         <div className="anfitrion-formulario">
           <div className="anfitrion-campo">
-            <label>Llave de Partida</label>
+            <label htmlFor="anfitrion-llave">Llave de Partida</label>
             <input
+              id="anfitrion-llave"
               type="text"
               value={llavePartida}
               onChange={(e) => setLlavePartida(e.target.value)}

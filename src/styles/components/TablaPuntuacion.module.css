@@ -84,6 +84,10 @@
     letter-spacing: 0.1em;
 }
 
+.tabla-puntuacion-puntos-heading {
+    text-align: right;
+}
+
 .tabla-puntuacion-tabla td {
     padding: 1rem;
     border-top: 1px solid var(--border);

@@ -16,7 +16,7 @@ type PasoCrear = 'nombre' | 'metodo' | 'gemini-cargando' | 'pegar';
 
 export default function PersonalizarTema() {
     const { temas, temaActivo, agregarTema, eliminarTema, activarTema, desactivarTema, eliminarPalabra, puedeAgregar } = useTemas();
-    const { apiKey, guardarApiKey, eliminarApiKey, generarTema, estado: _estadoGemini, error: errorGemini, setEstado } = useGemini();
+    const { apiKey, guardarApiKey, eliminarApiKey, generarTema, error: errorGemini, setEstado } = useGemini();
 
     const [vista, setVista] = useState<Vista>('lista');
     const [temaSeleccionado, setTemaSeleccionado] = useState<string | null>(null);

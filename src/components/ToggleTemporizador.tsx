@@ -12,7 +12,13 @@ export default function ToggleTemporizador({ activo, tiempo, setActivo, setTiemp
         <div className="toggle-contenedor">
             <div className="toggle-fila">
                 <span className="toggle-label">Temporizador</span>
-                <button className={`toggle-btn ${activo ? 'toggle-btn-activo' : ''}`} onClick={() => setActivo(!activo)}>
+                <button
+                    type="button"
+                    className={`toggle-btn ${activo ? 'toggle-btn-activo' : ''}`}
+                    onClick={() => setActivo(!activo)}
+                    aria-label={activo ? 'Desactivar temporizador' : 'Activar temporizador'}
+                    aria-pressed={activo}
+                >
                     <span className="toggle-circulo" />
                 </button>
             </div>
@@ -23,12 +29,14 @@ export default function ToggleTemporizador({ activo, tiempo, setActivo, setTiemp
                         <span className="toggle-slider-valor">{tiempo} min</span>
                     </div>
                     <input
+                        id="temporizador-tiempo"
                         className="toggle-slider"
                         type="range"
                         min={1}
                         max={10}
                         value={tiempo}
                         onChange={e => setTiempo(Number(e.target.value))}
+                        aria-label="Duración del temporizador en minutos"
                     />
                     <div className="toggle-slider-marcas">
                         <span>1 min</span>

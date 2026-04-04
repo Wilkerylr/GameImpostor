@@ -42,7 +42,7 @@ export default function TablaPuntuacion({ entries, showResetButton = true }: Pro
             <tr>
               <th>Rango</th>
               <th>Nombre</th>
-              <th style={{ textAlign: 'right' }}>Puntos Totales</th>
+              <th className={styles['tabla-puntuacion-puntos-heading']}>Puntos Totales</th>
             </tr>
           </thead>
           <tbody>

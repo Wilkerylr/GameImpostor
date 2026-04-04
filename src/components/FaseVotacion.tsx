@@ -29,18 +29,22 @@ export default function FaseVotacion({ votacion, palabraReal, configuracion, onJ
             return;
         }
 
-        const totalPlayers = jugadoresIniciales.length;
-        const totalImpostors = impostores.length;
-        const ganadores = ganador === 'inocentes'
-            ? jugadoresIniciales.filter(j => j.rol === 'inocente')
-            : impostores;
+        const timeout = window.setTimeout(() => {
+            const totalPlayers = jugadoresIniciales.length;
+            const totalImpostors = impostores.length;
+            const ganadores = ganador === 'inocentes'
+                ? jugadoresIniciales.filter(j => j.rol === 'inocente')
+                : impostores;
 
-        ganadores.forEach((jugador) => {
-            const puntos = calculatePoints(jugador.rol, totalPlayers, totalImpostors, ganador);
-            addOrUpdatePlayer(jugador.nombre, puntos);
-        });
+            ganadores.forEach((jugador) => {
+                const puntos = calculatePoints(jugador.rol, totalPlayers, totalImpostors, ganador);
+                addOrUpdatePlayer(jugador.nombre, puntos);
+            });
 
-        setPuntosAplicados(true);
+            setPuntosAplicados(true);
+        }, 0);
+
+        return () => window.clearTimeout(timeout);
     }, [configuracion.leaderboardActivo, estado, puntosAplicados, ganador, jugadoresIniciales, impostores, addOrUpdatePlayer]);
 
     if (estado === 'finalizado') return (

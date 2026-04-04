@@ -9,7 +9,7 @@ import {BrowserRouter, Routes, Route} from 'react-router-dom'
 
 function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={import.meta.env.BASE_URL}>
       <Routes>
         <Route path='/' element={<Menu/>}/>
         <Route path='/juego' element={<Juego />}/>
@@ -17,6 +17,7 @@ function App() {
         <Route path='/personalizartema' element={<PersonalizarTema/>}/>
         <Route path='/anfitrion' element={<Anfitrion/>}/>
         <Route path='/jugador' element={<Jugador/>}/>
+        <Route path='*' element={<Menu />} />
       </Routes>
     </BrowserRouter>
   )

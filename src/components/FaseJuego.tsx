@@ -40,18 +40,27 @@ export default function FaseJuego({ jugadores, configuracion, onJugarDeNuevo }: 
 
     useEffect(() => {
         if (!configuracion.temporizadorActivo || enVotacion) return;
+
         if (tiempoRestante <= 0) {
-            sessionStorage.setItem('juego_enVotacion', 'true');
-            setEnVotacion(true);
-            return;
+            const timeout = window.setTimeout(() => {
+                sessionStorage.setItem('juego_enVotacion', 'true');
+                setEnVotacion(true);
+            }, 0);
+            return () => window.clearTimeout(timeout);
         }
-        const intervalo = setInterval(() => setTiempoRestante(prev => {
+
+        const intervalo = window.setInterval(() => setTiempoRestante(prev => {
             const nuevo = prev - 1;
             sessionStorage.setItem('juego_tiempoRestante', String(nuevo));
+            if (nuevo <= 0) {
+                sessionStorage.setItem('juego_enVotacion', 'true');
+                setEnVotacion(true);
+            }
             return nuevo;
         }), 1000);
-        return () => clearInterval(intervalo);
-    }, [tiempoRestante, configuracion.temporizadorActivo, enVotacion]);
+
+        return () => window.clearInterval(intervalo);
+    }, [configuracion.temporizadorActivo, enVotacion, tiempoRestante]);
 
     const irAVotacion = () => {
         sessionStorage.setItem('juego_enVotacion', 'true');
