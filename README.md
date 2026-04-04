@@ -184,9 +184,3 @@ Definidas en `index.css`. Para cambiar la paleta completa solo se edita ese arch
 - **Privacidad** — La app no recopila ni transmite datos personales. Nombres y configuraciones se guardan únicamente en el dispositivo del usuario.
 - **Contenido IA** — El contenido generado por herramientas de IA y pegado en la sección de temas es responsabilidad exclusiva del usuario.
 
----
-
-## Pendientes
-
-- [ ] Integrar `BotonDonacion` cuando se tenga la URL de la plataforma de donación
-- [ ] Eliminar `button.tsx` y `Button.css` (código legado sin uso)
