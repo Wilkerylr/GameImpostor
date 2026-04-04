@@ -1,6 +1,6 @@
 import './App.css'
 import { Suspense, lazy } from 'react'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { HashRouter, Routes, Route } from 'react-router-dom'
 
 const loadMenu = () => import('./pages/menu')
 const loadJuego = () => import('./pages/juego')
@@ -25,7 +25,7 @@ export const preloadJugador = () => void loadJugador()
 
 function App() {
   return (
-    <BrowserRouter basename={import.meta.env.BASE_URL}>
+    <HashRouter>
       <Suspense fallback={<div className="app-cargando">Cargando...</div>}>
         <Routes>
           <Route path='/' element={<Menu/>}/>
@@ -37,7 +37,7 @@ function App() {
           <Route path='*' element={<Menu />} />
         </Routes>
       </Suspense>
-    </BrowserRouter>
+    </HashRouter>
   )
 }
 
