@@ -28,6 +28,7 @@ export function useConfiguracion() {
     const [nombres, setNombresState] = useState<string[]>(() => leerNombres());
     const [temporizadorActivo, setTemporizadorActivoState] = useState(() => leerBoolean('temporizadorActivo', false));
     const [tiempoDiscusion, setTiempoDiscusionState] = useState(() => leerStorage('tiempoDiscusion', 3));
+    const [leaderboardActivo, setLeaderboardActivoState] = useState(() => leerBoolean('leaderboardActivo', false));
 
     const setJugadores = (valor: number) => {
         localStorage.setItem('jugadores', String(valor));
@@ -54,5 +55,10 @@ export function useConfiguracion() {
         setTiempoDiscusionState(valor);
     };
 
-    return { jugadores, setJugadores, impostores, setImpostores, nombres, setNombres, temporizadorActivo, setTemporizadorActivo, tiempoDiscusion, setTiempoDiscusion };
+    const setLeaderboardActivo = (valor: boolean) => {
+        localStorage.setItem('leaderboardActivo', String(valor));
+        setLeaderboardActivoState(valor);
+    };
+
+    return { jugadores, setJugadores, impostores, setImpostores, nombres, setNombres, temporizadorActivo, setTemporizadorActivo, tiempoDiscusion, setTiempoDiscusion, leaderboardActivo, setLeaderboardActivo };
 }

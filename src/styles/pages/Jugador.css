@@ -1,0 +1,236 @@
+/* Página del Modo Jugador */
+
+.jugador-contenedor {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+    padding: 2rem;
+    min-height: 100vh;
+    background-color: var(--bg-base);
+    color: var(--text-primary);
+}
+
+.jugador-titulo {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0;
+    text-align: center;
+}
+
+.jugador-subtitulo {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    margin: 0;
+    text-align: center;
+}
+
+.jugador-formulario {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    width: 100%;
+    max-width: 500px;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 2rem;
+    box-sizing: border-box;
+}
+
+.jugador-campo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.jugador-campo label {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.jugador-campo input,
+.jugador-campo select {
+    padding: 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background-color: var(--bg-input);
+    color: var(--text-primary);
+    font-size: 1rem;
+}
+
+.jugador-sin-nombres {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background-color: rgba(224, 85, 85, 0.05);
+}
+
+.jugador-sin-nombres p {
+    margin: 0;
+    color: var(--text-secondary);
+}
+
+.jugador-link-config {
+    align-self: flex-start;
+    padding: 0.75rem 1rem;
+    background-color: var(--accent);
+    color: white;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.jugador-link-config:hover {
+    background-color: var(--accent-hover);
+}
+
+.jugador-campo input:focus,
+.jugador-campo select:focus {
+    border-color: var(--accent);
+    outline: none;
+}
+
+.jugador-escanear,
+.jugador-detener {
+    padding: 1rem;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.2rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.jugador-escanear {
+    background-color: var(--accent);
+    color: white;
+}
+
+.jugador-escanear:hover {
+    background-color: var(--accent-hover);
+}
+
+.jugador-detener {
+    background-color: var(--danger);
+    color: white;
+}
+
+.jugador-detener:hover {
+    background-color: var(--danger-hover);
+}
+
+.jugador-scanner {
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.jugador-feedback {
+    padding: 1rem;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: 600;
+}
+
+.jugador-feedback.success {
+    background-color: rgba(90, 170, 106, 0.1);
+    color: var(--success);
+    border: 1px solid rgba(90, 170, 106, 0.3);
+}
+
+.jugador-feedback.error {
+    background-color: rgba(224, 85, 85, 0.1);
+    color: var(--danger);
+    border: 1px solid rgba(224, 85, 85, 0.3);
+}
+
+.jugador-rol {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+    width: 100%;
+    max-width: 500px;
+}
+
+.jugador-tarjeta {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    background-color: var(--bg-card-dark);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 2rem;
+    width: 100%;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    text-align: center;
+}
+
+.jugador-tarjeta h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: var(--text-primary);
+}
+
+.jugador-rol-badge {
+    font-size: 1.2rem;
+    font-weight: 700;
+    padding: 0.75rem 1.5rem;
+    border-radius: 999px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+.jugador-rol-badge.impostor {
+    background-color: var(--accent-subtle);
+    color: var(--accent);
+    border: 1px solid rgba(212, 98, 42, 0.3);
+}
+
+.jugador-rol-badge.inocente {
+    background-color: rgba(90, 170, 106, 0.1);
+    color: var(--success);
+    border: 1px solid rgba(90, 170, 106, 0.3);
+}
+
+.jugador-palabra {
+    font-size: 1.1rem;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.jugador-reiniciar {
+    padding: 0.75rem 1.5rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background-color: var(--bg-card);
+    color: var(--text-primary);
+    cursor: pointer;
+    font-weight: 600;
+    transition: border-color 0.2s;
+}
+
+.jugador-reiniciar:hover {
+    border-color: var(--accent);
+}
+
+/* Móviles */
+@media (max-width: 600px) {
+    .jugador-contenedor {
+        padding: 1rem;
+        gap: 1.5rem;
+    }
+
+    .jugador-formulario {
+        padding: 1.5rem;
+    }
+
+    .jugador-tarjeta {
+        padding: 1.5rem;
+    }
+}

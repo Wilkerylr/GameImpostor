@@ -1,21 +1,47 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useVotacion } from '../model/useVotacion';
+import { useConfiguracion } from '../model/useConfiguracion';
+import { useLeaderboard } from '../model/useLeaderboard';
+import { calculatePoints } from '../model/leaderboard';
 import { limpiarPartida } from '../model/limpiarPartida';
 import BotonSalir from './BotonSalir';
+import TablaPuntuacion from './TablaPuntuacion';
 import '../styles/components/FaseVotacion.css';
 
 interface Props {
     votacion: ReturnType<typeof useVotacion>;
     palabraReal: string;
+    configuracion: ReturnType<typeof useConfiguracion>;
     onJugarDeNuevo: () => void;
 }
 
-export default function FaseVotacion({ votacion, palabraReal, onJugarDeNuevo }: Props) {
-    const { jugadoresActivos, ganador, estado, expulsado, impostor, resolverVotacion, verificarAdivinanza } = votacion;
+export default function FaseVotacion({ votacion, palabraReal, configuracion, onJugarDeNuevo }: Props) {
+    const { jugadoresActivos, ganador, estado, expulsado, impostores, jugadoresIniciales, resolverVotacion, verificarAdivinanza } = votacion;
+    const { leaderboard, addOrUpdatePlayer } = useLeaderboard();
     const [confirmando, setConfirmando] = useState<string | null>(null);
     const [adivinanza, setAdivinanza] = useState('');
+    const [puntosAplicados, setPuntosAplicados] = useState(false);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        if (!configuracion.leaderboardActivo || estado !== 'finalizado' || puntosAplicados || !ganador) {
+            return;
+        }
+
+        const totalPlayers = jugadoresIniciales.length;
+        const totalImpostors = impostores.length;
+        const ganadores = ganador === 'inocentes'
+            ? jugadoresIniciales.filter(j => j.rol === 'inocente')
+            : impostores;
+
+        ganadores.forEach((jugador) => {
+            const puntos = calculatePoints(jugador.rol, totalPlayers, totalImpostors, ganador);
+            addOrUpdatePlayer(jugador.nombre, puntos);
+        });
+
+        setPuntosAplicados(true);
+    }, [configuracion.leaderboardActivo, estado, puntosAplicados, ganador, jugadoresIniciales, impostores, addOrUpdatePlayer]);
 
     if (estado === 'finalizado') return (
         <div className="votacion-contenedor">
@@ -23,12 +49,22 @@ export default function FaseVotacion({ votacion, palabraReal, onJugarDeNuevo }: 
                 <span className="resultado-emoji">{ganador === 'impostor' ? '🕵️' : '👥'}</span>
                 <h1 className="resultado-titulo">{ganador === 'impostor' ? '¡Gana el impostor!' : '¡Ganan los inocentes!'}</h1>
                 {expulsado && <p className="resultado-subtitulo">{expulsado.nombre} fue expulsado</p>}
-                {impostor && <p className="resultado-impostor">El impostor era <strong>{impostor.nombre}</strong></p>}
+                {impostores.length === 1
+                    ? <p className="resultado-impostor">El impostor era <strong>{impostores[0].nombre}</strong></p>
+                    : <p className="resultado-impostor">Los impostores eran <strong>{impostores.map(i => i.nombre).join(', ')}</strong></p>
+                }
                 <div className="resultado-acciones">
                     <button className="votacion-modal-cancelar" onClick={() => { limpiarPartida(); navigate('/'); }}>Ir al menú</button>
                     <button className="votacion-modal-confirmar" onClick={onJugarDeNuevo}>Jugar de nuevo</button>
                 </div>
             </div>
+
+            {configuracion.leaderboardActivo && (
+                <div className="resultado-tabla">
+                    <h2 className="resultado-tabla-titulo">Tabla actualizada</h2>
+                    <TablaPuntuacion entries={leaderboard} showResetButton={false} />
+                </div>
+            )}
         </div>
     );
 
@@ -37,7 +73,7 @@ export default function FaseVotacion({ votacion, palabraReal, onJugarDeNuevo }: 
             <BotonSalir />
             <div className="adivinanza-contenedor">
                 <h2>¡{expulsado?.nombre} fue expulsado!</h2>
-                <p>Eras el impostor. ¿Puedes adivinar la palabra secreta?</p>
+                <p>{impostores.length === 1 ? 'Eras el impostor' : 'Eran los impostores'}. ¿Pueden adivinar la palabra secreta?</p>
                 <input
                     className="adivinanza-input"
                     type="text"

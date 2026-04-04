@@ -1,0 +1,116 @@
+/* Tabla de puntuación para mostrar el leaderboard de jugadores */
+
+.tabla-puntuacion {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    border-radius: 20px;
+    padding: 2rem;
+    width: 100%;
+    max-width: 800px;
+    background-color: var(--bg-card-dark);
+    border: 1px solid var(--border);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    box-sizing: border-box;
+}
+
+.tabla-puntuacion-header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.tabla-puntuacion-titulo {
+    font-size: 1.2rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--text-primary);
+    text-transform: uppercase;
+}
+
+.tabla-puntuacion-subtitulo {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.tabla-puntuacion-descripcion {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.tabla-puntuacion-reset {
+    align-self: flex-start;
+    padding: 0.5rem 1rem;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background-color: var(--bg-card);
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: border-color 0.25s, background-color 0.25s;
+}
+
+.tabla-puntuacion-reset:hover {
+    border-color: var(--accent);
+    background-color: var(--accent-subtle);
+}
+
+.tabla-puntuacion-tabla {
+    overflow: hidden;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background-color: var(--bg-card);
+}
+
+.tabla-puntuacion-tabla table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+}
+
+.tabla-puntuacion-tabla thead {
+    background-color: var(--bg-card-dark);
+    color: var(--text-secondary);
+}
+
+.tabla-puntuacion-tabla th {
+    padding: 1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+.tabla-puntuacion-tabla td {
+    padding: 1rem;
+    border-top: 1px solid var(--border);
+}
+
+.tabla-puntuacion-tabla tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.tabla-puntuacion-rango {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.tabla-puntuacion-nombre {
+    color: var(--text-primary);
+}
+
+.tabla-puntuacion-puntos {
+    text-align: right;
+    font-weight: 600;
+    color: var(--accent);
+}
+
+.tabla-puntuacion-vacia {
+    padding: 2rem;
+    text-align: center;
+    color: var(--text-muted);
+    font-style: italic;
+}

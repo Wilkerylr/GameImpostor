@@ -58,7 +58,7 @@ export default function FaseJuego({ jugadores, configuracion, onJugarDeNuevo }: 
         setEnVotacion(true);
     };
 
-    if (enVotacion) return <FaseVotacion votacion={votacion} palabraReal={palabraReal} onJugarDeNuevo={onJugarDeNuevo} />;
+    if (enVotacion) return <FaseVotacion votacion={votacion} palabraReal={palabraReal} configuracion={configuracion} onJugarDeNuevo={onJugarDeNuevo} />;
 
 
     const minutos = Math.floor(tiempoRestante / 60).toString().padStart(2, '0');

@@ -1,11 +1,10 @@
 // Maneja la fase de votación:
-// - Registrar votos de cada jugador
-// - Expulsar al jugador con más votos
-// - En empate, continuar la discusión
-// - Si el expulsado es el impostor → pedirle que adivine la palabra
+// - Expulsar jugadores por consenso
+// - Si se expulsa un inocente, el juego continúa hasta que la cantidad de inocentes e impostores sea la misma
+//     * cuando se igualan, ganan los impostores
+// - Si se expulsan todos los impostores → el último adivina la palabra
 //     * Si adivina: gana el impostor
 //     * Si no adivina: ganan los inocentes
-// - Si el expulsado es inocente → gana el impostor
 
 import { useState } from "react";
 import type { Jugador } from "./types.tsx";
@@ -29,7 +28,7 @@ export function useVotacion(jugadoresIniciales: Jugador[]) {
         return e ? JSON.parse(e) : null;
     });
 
-    const impostor = jugadoresIniciales.find(j => j.rol === 'impostor') ?? null;
+    const impostores = jugadoresIniciales.filter(j => j.rol === 'impostor');
 
     const resolverVotacion = (nombreEliminado: string) => {
         const jugadorExpulsado = jugadoresActivos.find(j => j.nombre === nombreEliminado);
@@ -42,14 +41,31 @@ export function useVotacion(jugadoresIniciales: Jugador[]) {
         setJugadoresActivos(nuevosActivos);
 
         if (jugadorExpulsado.rol === 'inocente') {
-            sessionStorage.setItem('votacion_ganador', 'impostor');
-            sessionStorage.setItem('votacion_estado', 'finalizado');
-            setGanador('impostor');
-            setEstado('finalizado');
-        } else {
-            sessionStorage.setItem('votacion_estado', 'adivinando');
-            setEstado('adivinando');
+            const inocentesActivos = nuevosActivos.filter(j => j.rol === 'inocente');
+            const impostoresActivos = nuevosActivos.filter(j => j.rol === 'impostor');
+
+            if (inocentesActivos.length <= impostoresActivos.length) {
+                // Cuando la cantidad de inocentes e impostores se iguala o queda por debajo, ganan los impostores
+                sessionStorage.setItem('votacion_ganador', 'impostor');
+                sessionStorage.setItem('votacion_estado', 'finalizado');
+                setGanador('impostor');
+                setEstado('finalizado');
+                return;
+            }
+
+            // Aún hay más inocentes que impostores, continuar votando
+            return;
         }
+
+        // Verificar si quedan impostores activos tras la expulsión
+        const impostoresRestantes = nuevosActivos.filter(j => j.rol === 'impostor');
+        if (impostoresRestantes.length > 0) {
+            // Aún quedan impostores, continuar votando
+            return;
+        }
+        // Último impostor expulsado → oportunidad de adivinar
+        sessionStorage.setItem('votacion_estado', 'adivinando');
+        setEstado('adivinando');
     };
 
     const verificarAdivinanza = (palabraIngresada: string, palabraReal: string) => {
@@ -61,5 +77,5 @@ export function useVotacion(jugadoresIniciales: Jugador[]) {
         setEstado('finalizado');
     };
 
-    return { jugadoresActivos, ganador, estado, expulsado, impostor, resolverVotacion, verificarAdivinanza };
+    return { jugadoresActivos, ganador, estado, expulsado, impostores, jugadoresIniciales, resolverVotacion, verificarAdivinanza };
 }

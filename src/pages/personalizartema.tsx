@@ -16,14 +16,13 @@ type PasoCrear = 'nombre' | 'metodo' | 'gemini-cargando' | 'pegar';
 
 export default function PersonalizarTema() {
     const { temas, temaActivo, agregarTema, eliminarTema, activarTema, desactivarTema, eliminarPalabra, puedeAgregar } = useTemas();
-    const { apiKey, guardarApiKey, eliminarApiKey, generarTema, estado: estadoGemini, error: errorGemini, setEstado } = useGemini();
+    const { apiKey, guardarApiKey, eliminarApiKey, generarTema, estado: _estadoGemini, error: errorGemini, setEstado } = useGemini();
 
     const [vista, setVista] = useState<Vista>('lista');
     const [temaSeleccionado, setTemaSeleccionado] = useState<string | null>(null);
 
     // Crear tema
     const [nombreNuevo, setNombreNuevo] = useState('');
-    const [metodo, setMetodo] = useState<Metodo>('gemini');
     const [paso, setPaso] = useState<PasoCrear>('nombre');
     const [jsonPegado, setJsonPegado] = useState('');
     const [error, setError] = useState<string | null>(null);
@@ -51,7 +50,6 @@ export default function PersonalizarTema() {
     };
 
     const elegirMetodo = async (m: Metodo) => {
-        setMetodo(m);
         if (m === 'gemini') {
             setPaso('gemini-cargando');
             const resultado = await generarTema(nombreNuevo.trim());
