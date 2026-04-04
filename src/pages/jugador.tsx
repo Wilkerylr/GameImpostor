@@ -1,164 +1,166 @@
-import { useState, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import type { Html5QrcodeScanner } from 'html5-qrcode';
 import BotonMenu from '../components/BotonMenu';
-import { useConfiguracion } from '../model/useConfiguracion';
+import { obtenerAsignacionParaJugador } from '../model/multiDispositivo';
 import '../styles/pages/Jugador.css';
 
-interface DatosQR {
-  u?: string;
-  r?: string;
-  p?: string;
-}
-
-interface PaqueteQR {
-  players?: DatosQR[];
-}
+type EstadoEscaner = 'inactivo' | 'iniciando' | 'activo' | 'resuelto';
 
 export default function Jugador() {
-  const { nombres } = useConfiguracion();
-  const [llavePartida, setLlavePartida] = useState('');
-  const [nombreUsuario, setNombreUsuario] = useState(() => nombres[0] || '');
+  const [nombreUsuario, setNombreUsuario] = useState('');
   const [rol, setRol] = useState<string | null>(null);
   const [palabra, setPalabra] = useState<string | null>(null);
-  const [escaneando, setEscaneando] = useState(false);
+  const [escaneando, setEscaneando] = useState<EstadoEscaner>('inactivo');
   const [feedback, setFeedback] = useState('');
-  const scannerRef = useRef<Html5QrcodeScanner | null>(null);
+  const scannerRef = useRef<{
+    stop?: () => Promise<void>;
+    clear?: () => Promise<void> | void;
+  } | null>(null);
+  const regionId = 'qr-reader';
 
-  const iniciarEscaneo = async () => {
-    if (nombres.length === 0) {
-      setFeedback('No hay nombres configurados. Ve a configuración para agregarlos.');
+  const detenerEscaneo = useCallback(async () => {
+    const scanner = scannerRef.current;
+
+    if (!scanner) {
       return;
     }
-
-    if (!llavePartida.trim() || !nombreUsuario.trim()) {
-      setFeedback('Completa la llave de partida y selecciona tu nombre.');
-      return;
-    }
-
-    setEscaneando(true);
-    setFeedback('Cargando cámara...');
 
     try {
-      const [{ Html5QrcodeScanner }] = await Promise.all([
-        import('html5-qrcode')
-      ]);
+      if (typeof scanner.stop === 'function') {
+        await scanner.stop();
+      }
+    } catch {
+      // Ignorar errores al detener si ya está parado
+    }
 
-      scannerRef.current = new Html5QrcodeScanner(
-        'qr-reader',
-        { fps: 10, qrbox: { width: 250, height: 250 } },
-        false
+    try {
+      if (typeof scanner.clear === 'function') {
+        await scanner.clear();
+      }
+    } catch {
+      // Ignorar errores al limpiar si ya está liberado
+    }
+
+    scannerRef.current = null;
+  }, []);
+
+  const onScanSuccess = useCallback(
+    async (decodedText: string) => {
+      const nombreLimpio = nombreUsuario.trim();
+
+      if (!nombreLimpio) {
+        setFeedback('Escribe tu nombre exactamente como lo configuró el anfitrión antes de escanear.');
+        return;
+      }
+
+      try {
+        const asignacion = await obtenerAsignacionParaJugador(decodedText, nombreLimpio);
+
+        if (!asignacion) {
+          setFeedback(
+            'No se encontró una asignación para ese nombre en esta partida. Verifica que coincida exactamente con la configuración del anfitrión.',
+          );
+          return;
+        }
+
+        setRol(asignacion.rol);
+        setPalabra(asignacion.palabra);
+        setFeedback('¡Rol asignado exitosamente!');
+        setEscaneando('resuelto');
+        await detenerEscaneo();
+      } catch {
+        setFeedback('El QR no corresponde a una partida válida o no se pudo leer correctamente.');
+      }
+    },
+    [detenerEscaneo, nombreUsuario],
+  );
+
+  const onScanFailure = useCallback(() => {
+    // Ignorar errores de escaneo, solo procesar éxitos
+  }, []);
+
+  const iniciarEscaneo = useCallback(async () => {
+    const nombreLimpio = nombreUsuario.trim();
+
+    if (!nombreLimpio) {
+      setFeedback('Escribe tu nombre exactamente como lo configuró el anfitrión antes de escanear.');
+      return;
+    }
+
+    setRol(null);
+    setPalabra(null);
+    setFeedback('Cargando cámara...');
+    setEscaneando('iniciando');
+
+    try {
+      const modulo = await import('html5-qrcode');
+      const Html5Qrcode = modulo.Html5Qrcode;
+      const scanner = new Html5Qrcode(regionId);
+      scannerRef.current = scanner;
+
+      await scanner.start(
+        { facingMode: 'environment' },
+        { fps: 10, qrbox: { width: 220, height: 220 } },
+        (decodedText: string) => {
+          void onScanSuccess(decodedText);
+        },
+        onScanFailure,
       );
 
-      setFeedback('Escaneando...');
-      scannerRef.current.render(onScanSuccess, onScanFailure);
+      setEscaneando('activo');
+      setFeedback('Escaneando... apunta al mismo QR que usa todo el grupo.');
     } catch {
-      setEscaneando(false);
-      setFeedback('No se pudo cargar el lector QR en este dispositivo.');
+      setEscaneando('inactivo');
+      setFeedback('No se pudo iniciar la cámara. Revisa los permisos del navegador e inténtalo de nuevo.');
+      await detenerEscaneo();
     }
-  };
+  }, [detenerEscaneo, nombreUsuario, onScanFailure, onScanSuccess]);
 
-  const detenerEscaneo = () => {
-    if (scannerRef.current) {
-      scannerRef.current.clear().catch(console.error);
-      scannerRef.current = null;
-    }
-    setEscaneando(false);
-  };
-
-  const onScanSuccess = async (decodedText: string) => {
-    try {
-      const CryptoJS = (await import('crypto-js')).default;
-      const enmascarado = atob(decodedText);
-      const key = CryptoJS.enc.Utf8.parse(llavePartida.padEnd(16, '0').slice(0, 16));
-      const decrypted = CryptoJS.AES.decrypt(enmascarado, key, {
-        mode: CryptoJS.mode.ECB,
-        padding: CryptoJS.pad.Pkcs7
-      });
-      const datosStr = decrypted.toString(CryptoJS.enc.Utf8);
-      const paquete = JSON.parse(datosStr) as PaqueteQR & DatosQR;
-
-      const jugadores = Array.isArray(paquete.players)
-        ? paquete.players
-        : paquete.u ? [paquete as DatosQR] : [];
-
-      const partida = jugadores.find(j => j.u?.trim().toLowerCase() === nombreUsuario.trim().toLowerCase());
-      if (!partida) {
-        setFeedback('Este QR no es para ti o tu nombre no está registrado.');
-        return;
-      }
-
-      if (!partida.r || !partida.p) {
-        setFeedback('El QR no contiene información válida.');
-        return;
-      }
-
-      setRol(partida.r);
-      setPalabra(partida.p);
-      setFeedback('¡Rol asignado exitosamente!');
-      detenerEscaneo();
-    } catch {
-      setFeedback('Error al decodificar el QR. Verifica la llave de partida.');
-    }
-  };
-
-  const onScanFailure = () => {
-    // Ignorar errores de escaneo, solo procesar éxitos
-  };
+  useEffect(() => {
+    return () => {
+      void detenerEscaneo();
+    };
+  }, [detenerEscaneo]);
 
   return (
     <div className="jugador-contenedor">
       <BotonMenu />
 
       <h1 className="jugador-titulo">Modo Jugador</h1>
-      <p className="jugador-subtitulo">Escanea el código QR único y obtén tu rol privado.</p>
+      <p className="jugador-subtitulo">
+        Todos los jugadores usan el mismo QR maestro. Escribe tu nombre exactamente igual a como fue configurado por el
+        anfitrión y luego escanea ese mismo código.
+      </p>
 
       {!rol ? (
         <div className="jugador-formulario">
           <div className="jugador-campo">
-            <label htmlFor="jugador-llave">Llave de Partida</label>
+            <label htmlFor="jugador-nombre">Tu Nombre</label>
             <input
-              id="jugador-llave"
+              id="jugador-nombre"
               type="text"
-              value={llavePartida}
-              onChange={(e) => setLlavePartida(e.target.value)}
-              placeholder="Ej: fiesta2024"
-              maxLength={16}
+              value={nombreUsuario}
+              onChange={(e) => setNombreUsuario(e.target.value)}
+              placeholder="Ej: Ana"
+              disabled={escaneando === 'activo' || escaneando === 'resuelto'}
             />
           </div>
 
-          <div className="jugador-campo">
-            <label htmlFor="jugador-nombre">Tu Nombre</label>
-            {nombres.length > 0 ? (
-              <select
-                id="jugador-nombre"
-                value={nombreUsuario}
-                onChange={(e) => setNombreUsuario(e.target.value)}
-                disabled={escaneando}
-              >
-                {nombres.map((nombre, index) => (
-                  <option key={index} value={nombre}>{nombre || `Jugador ${index + 1}`}</option>
-                ))}
-              </select>
-            ) : (
-              <div className="jugador-sin-nombres">
-                <p>No hay nombres configurados para esta partida.</p>
-                <Link to="/config" className="jugador-link-config">Ir a configuración</Link>
-              </div>
-            )}
-          </div>
-
-          {!escaneando ? (
-            <button onClick={iniciarEscaneo} className="jugador-escanear">
-              Iniciar Escaneo
-            </button>
-          ) : (
-            <button onClick={detenerEscaneo} className="jugador-detener">
-              Detener Escaneo
+          {escaneando === 'inactivo' && (
+            <button onClick={() => void iniciarEscaneo()} className="jugador-escanear">
+              Escanear QR maestro
             </button>
           )}
 
-          <div id="qr-reader" className="jugador-scanner"></div>
+          {escaneando === 'iniciando' && <p className="jugador-status">Iniciando cámara...</p>}
+          {escaneando === 'activo' && (
+            <p className="jugador-status">Escaneando... apunta al mismo QR que usa todo el grupo.</p>
+          )}
+          {escaneando === 'resuelto' && (
+            <p className="jugador-status">Asignación encontrada. La cámara se ha detenido.</p>
+          )}
+
+          <div id={regionId} className="jugador-scanner"></div>
 
           {feedback && (
             <div className={`jugador-feedback ${feedback.includes('exitosamente') ? 'success' : 'error'}`}>
@@ -177,11 +179,23 @@ export default function Jugador() {
               <strong>{rol === 'impostor' ? 'Tu pista:' : 'Tu palabra:'}</strong> {palabra}
             </p>
           </div>
-          <button onClick={() => { setRol(null); setPalabra(null); setFeedback(''); }} className="jugador-reiniciar">
-            Escanear Otro QR
+          <button
+            onClick={() => {
+              setRol(null);
+              setPalabra(null);
+              setFeedback('');
+              setEscaneando('inactivo');
+            }}
+            className="jugador-reiniciar"
+          >
+            Escanear de nuevo
           </button>
         </div>
       )}
+
+      <Link to="/" className="jugador-link-config">
+        Volver al inicio
+      </Link>
     </div>
   );
 }
