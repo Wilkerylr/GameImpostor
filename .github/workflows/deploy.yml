@@ -1,4 +1,4 @@
-name: Deploy to GitHub Pages
+name: Deploy GameImpostor
 
 on:
   push:
@@ -13,26 +13,25 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: 20
           cache: 'npm'
 
-      - name: Install dependencies
-        run: npm install
+      - name: Install and Build
+        run: |
+          npm install
+          npm run build
 
-      - name: Build
-        run: npm run build
-
-      - name: Upload artifact
+      - name: Upload to Pages
         uses: actions/upload-pages-artifact@v3
         with:
-          path: './dist' # Si usas Vite, esta es la carpeta.
+          path: './dist'
 
-      - name: Deploy to GitHub Pages
+      - name: Publish
         id: deployment
         uses: actions/deploy-pages@v4
