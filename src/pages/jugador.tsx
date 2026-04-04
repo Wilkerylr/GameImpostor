@@ -7,83 +7,77 @@ import '../styles/pages/Jugador.css';
 type EstadoEscaner = 'inactivo' | 'iniciando' | 'activo' | 'resuelto';
 
 export default function Jugador() {
+  // --- ESTADOS ---
   const [nombreUsuario, setNombreUsuario] = useState('');
   const [rol, setRol] = useState<string | null>(null);
   const [palabra, setPalabra] = useState<string | null>(null);
   const [escaneando, setEscaneando] = useState<EstadoEscaner>('inactivo');
   const [feedback, setFeedback] = useState('');
+  const [mostrarRevelador, setMostrarRevelador] = useState(false); // Movido adentro del componente
+
   const scannerRef = useRef<{
     stop?: () => Promise<void>;
     clear?: () => Promise<void> | void;
   } | null>(null);
+  
   const regionId = 'qr-reader';
+
+  // --- FUNCIONES ---
 
   const detenerEscaneo = useCallback(async () => {
     const scanner = scannerRef.current;
-
-    if (!scanner) {
-      return;
-    }
+    if (!scanner) return;
 
     try {
-      if (typeof scanner.stop === 'function') {
-        await scanner.stop();
-      }
-    } catch {
-      // Ignorar errores al detener si ya está parado
+      if (typeof scanner.stop === 'function') await scanner.stop();
+      if (typeof scanner.clear === 'function') await scanner.clear();
+    } catch (e) {
+      console.warn("Error limpiando scanner:", e);
     }
-
-    try {
-      if (typeof scanner.clear === 'function') {
-        await scanner.clear();
-      }
-    } catch {
-      // Ignorar errores al limpiar si ya está liberado
-    }
-
     scannerRef.current = null;
   }, []);
 
   const onScanSuccess = useCallback(
     async (decodedText: string) => {
       const nombreLimpio = nombreUsuario.trim();
-
+      
       if (!nombreLimpio) {
-        setFeedback('Escribe tu nombre exactamente como lo configuró el anfitrión antes de escanear.');
+        setFeedback('Escribe tu nombre antes de escanear.');
         return;
       }
 
       try {
         const asignacion = await obtenerAsignacionParaJugador(decodedText, nombreLimpio);
 
-        if (!asignacion) {
-          setFeedback(
-            'No se encontró una asignación para ese nombre en esta partida. Verifica que coincida exactamente con la configuración del anfitrión.',
-          );
-          return;
-        }
+        if (asignacion) {
+          // Vibración opcional para feedback táctil
+          if (navigator.vibrate) navigator.vibrate(200);
 
-        setRol(asignacion.rol);
-        setPalabra(asignacion.palabra);
-        setFeedback('¡Rol asignado exitosamente!');
-        setEscaneando('resuelto');
-        await detenerEscaneo();
-      } catch {
-        setFeedback('El QR no corresponde a una partida válida o no se pudo leer correctamente.');
+          setRol(asignacion.rol);
+          setPalabra(asignacion.palabra);
+          setFeedback('¡Lectura correcta!');
+          setEscaneando('resuelto');
+          setMostrarRevelador(true); // Activa el mensaje de "Ver rol"
+          await detenerEscaneo();
+        } else {
+          setFeedback('No se encontró información para tu nombre en este QR.');
+        }
+      } catch (e) {
+        setFeedback('Error: El QR no es válido o está dañado.');
       }
     },
     [detenerEscaneo, nombreUsuario],
   );
 
   const onScanFailure = useCallback(() => {
-    // Ignorar errores de escaneo, solo procesar éxitos
+    // Silencioso: html5-qrcode lanza esto constantemente mientras busca
   }, []);
 
   const iniciarEscaneo = useCallback(async () => {
     const nombreLimpio = nombreUsuario.trim();
 
     if (!nombreLimpio) {
-      setFeedback('Escribe tu nombre exactamente como lo configuró el anfitrión antes de escanear.');
+      setFeedback('Escribe tu nombre exactamente como lo configuró el anfitrión.');
       return;
     }
 
@@ -93,28 +87,25 @@ export default function Jugador() {
     setEscaneando('iniciando');
 
     try {
-      const modulo = await import('html5-qrcode');
-      const Html5Qrcode = modulo.Html5Qrcode;
+      const { Html5Qrcode } = await import('html5-qrcode');
       const scanner = new Html5Qrcode(regionId);
       scannerRef.current = scanner;
 
       await scanner.start(
         { facingMode: 'environment' },
-        { fps: 10, qrbox: { width: 220, height: 220 } },
-        (decodedText: string) => {
-          void onScanSuccess(decodedText);
-        },
+        { fps: 15, qrbox: { width: 250, height: 250 } },
+        onScanSuccess,
         onScanFailure,
       );
 
       setEscaneando('activo');
-      setFeedback('Escaneando... apunta al mismo QR que usa todo el grupo.');
-    } catch {
+      setFeedback('Apunta al QR maestro del grupo.');
+    } catch (err) {
       setEscaneando('inactivo');
-      setFeedback('No se pudo iniciar la cámara. Revisa los permisos del navegador e inténtalo de nuevo.');
+      setFeedback('Error: No se pudo acceder a la cámara.');
       await detenerEscaneo();
     }
-  }, [detenerEscaneo, nombreUsuario, onScanFailure, onScanSuccess]);
+  }, [nombreUsuario, onScanSuccess, onScanFailure, detenerEscaneo]);
 
   useEffect(() => {
     return () => {
@@ -122,18 +113,16 @@ export default function Jugador() {
     };
   }, [detenerEscaneo]);
 
+  // --- RENDER ---
   return (
     <div className="jugador-contenedor">
       <BotonMenu />
-
       <h1 className="jugador-titulo">Modo Jugador</h1>
-      <p className="jugador-subtitulo">
-        Todos los jugadores usan el mismo QR maestro. Escribe tu nombre exactamente igual a como fue configurado por el
-        anfitrión y luego escanea ese mismo código.
-      </p>
 
-      {!rol ? (
+      {/* PASO 1: Formulario y Scanner */}
+      {!rol && (
         <div className="jugador-formulario">
+          <p className="jugador-subtitulo">Escribe tu nombre y escanea el QR maestro.</p>
           <div className="jugador-campo">
             <label htmlFor="jugador-nombre">Tu Nombre</label>
             <input
@@ -142,7 +131,7 @@ export default function Jugador() {
               value={nombreUsuario}
               onChange={(e) => setNombreUsuario(e.target.value)}
               placeholder="Ej: Ana"
-              disabled={escaneando === 'activo' || escaneando === 'resuelto'}
+              disabled={escaneando !== 'inactivo'}
             />
           </div>
 
@@ -152,25 +141,36 @@ export default function Jugador() {
             </button>
           )}
 
-          {escaneando === 'iniciando' && <p className="jugador-status">Iniciando cámara...</p>}
-          {escaneando === 'activo' && (
-            <p className="jugador-status">Escaneando... apunta al mismo QR que usa todo el grupo.</p>
-          )}
-          {escaneando === 'resuelto' && (
-            <p className="jugador-status">Asignación encontrada. La cámara se ha detenido.</p>
-          )}
-
           <div id={regionId} className="jugador-scanner"></div>
-
+          
           {feedback && (
-            <div className={`jugador-feedback ${feedback.includes('exitosamente') ? 'success' : 'error'}`}>
+            <div className={`jugador-feedback ${feedback.includes('Error') ? 'error' : 'info'}`}>
               {feedback}
             </div>
           )}
         </div>
-      ) : (
+      )}
+
+      {/* PASO 2: Confirmación exitosa (Oculta el rol) */}
+      {rol && mostrarRevelador && (
+        <div className="jugador-confirmacion">
+          <div className="jugador-feedback success">
+            ✅ Rol asignado correctamente
+          </div>
+          <p className="instruccion-secreta">Asegúrate de que nadie esté mirando tu pantalla.</p>
+          <button 
+            onClick={() => setMostrarRevelador(false)} 
+            className="btn-ver-rol"
+          >
+            👁️ Ver mi rol
+          </button>
+        </div>
+      )}
+
+      {/* PASO 3: Revelación del Rol */}
+      {rol && !mostrarRevelador && (
         <div className="jugador-rol">
-          <div className="jugador-tarjeta">
+          <div className="jugador-tarjeta animacion-revelar">
             <h2>Tu Rol</h2>
             <div className={`jugador-rol-badge ${rol === 'impostor' ? 'impostor' : 'inocente'}`}>
               {rol === 'impostor' ? '🕵️ Impostor' : '👥 Inocente'}
@@ -179,23 +179,23 @@ export default function Jugador() {
               <strong>{rol === 'impostor' ? 'Tu pista:' : 'Tu palabra:'}</strong> {palabra}
             </p>
           </div>
+          
           <button
             onClick={() => {
               setRol(null);
               setPalabra(null);
-              setFeedback('');
+              setMostrarRevelador(false);
               setEscaneando('inactivo');
+              setFeedback('');
             }}
             className="jugador-reiniciar"
           >
-            Escanear de nuevo
+            Escanear otra partida
           </button>
         </div>
       )}
 
-      <Link to="/" className="jugador-link-config">
-        Volver al inicio
-      </Link>
+      <Link to="/" className="jugador-link-config">Volver al inicio</Link>
     </div>
   );
 }
