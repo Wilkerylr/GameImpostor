@@ -15,8 +15,8 @@
 
   /* Texto */
   --text-primary:   #f0f0f0;
-  --text-secondary: rgba(240, 240, 240, 0.5);
-  --text-muted:     rgba(240, 240, 240, 0.25);
+  --text-secondary: rgb(240, 240, 240);
+  --text-muted:     rgba(240, 240, 240, 0.863);
 
   /* Acento naranja quemado */
   --accent:         #d4622a;
@@ -52,11 +52,23 @@ a:hover {
 
 body {
   margin: 0;
-  display: flex;
-  justify-content: center;
-  min-width: 320px;
-  min-height: 100vh;
+  background-image: url('/fondoGI.JPG');
+  
+  /* 1. Cambiamos 'cover' por 'auto' o un tamaño específico */
+  background-size: 400px 263px; /* O 'auto' para mantener el tamaño original de la imagen */ 
+  
+  /* 2. Cambiamos 'no-repeat' por 'repeat' */
+  background-repeat: repeat; 
+  
+  /* 3. Mantenemos el resto igual */
+  background-position: top left;
+  background-attachment: fixed;
   width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 button {
@@ -66,7 +78,8 @@ button {
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: var(--bg-card);
+  background-color: var(--accent);
+  color: var(--text-primary);
   cursor: pointer;
   transition: border-color 0.25s;
 }

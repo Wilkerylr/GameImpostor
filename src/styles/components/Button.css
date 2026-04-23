@@ -1,20 +1,57 @@
+/* Botones Generales */
 .StylesButton {
-    background-color: rgb(206, 206, 209);
-    color: Black;
+    /* Usamos el color de fondo de las tarjetas para un look oscuro */
+    background-color: var(--bg-card); 
+    
+    /* Usamos el naranja quemado para el texto o el borde */
+    color: var(--accent); 
+    
+    /* Añadimos un borde sutil para que resalte sobre el fondo de imagen */
+    border: 1px solid var(--border);
+    
     margin: 3px;
+    padding: 0.6em 1.2em; /* Para que tengan buen tamaño */
+    border-radius: 8px;   /* Consistencia con el diseño anterior */
+    font-weight: 500;
+    transition: all 0.25s ease; /* Para que el cambio de color sea suave */
+    cursor: pointer;
 }
 
+.StylesButton:hover {
+    background-color: var(--accent); /* Al pasar el mouse se vuelve naranja */
+    color: var(--text-primary);     /* El texto cambia a blanco/claro */
+    border-color: var(--accent-hover);
+}
+
+/* Contenedor de Botones */
 .StylesContenedorButton {
     display: flex;
     flex-direction: column;
     justify-content: center;
+    gap: 10px; /* Añadimos espacio entre botones */
 }
 
+/* Botón de Regreso (Superior Izquierda) */
 .StylesButtonReturn {
-    background-color: rgb(206, 206, 209);
-    color: Black;
-    margin: 6px;
+    /* Usamos el fondo oscuro más profundo para que no distraiga tanto */
+    background-color: var(--bg-card-dark);
+    
+    /* El texto en el color secundario o muteado */
+    color: var(--text-secondary);
+    
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    margin: 10px;
+    padding: 5px 15px;
+    
     position: absolute;
     top: 0;
     left: 0;
+    font-size: 0.9em;
+    transition: color 0.3s;
+}
+
+.StylesButtonReturn:hover {
+    color: var(--accent); /* Brilla en naranja al pasar el mouse */
+    border-color: var(--accent);
 }

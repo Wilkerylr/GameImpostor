@@ -1,37 +1,54 @@
-/* Página principal del menú: título, botones de navegación, ayuda y aviso legal. */
-
 .menu-contenedor {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 2.5rem;
+    /* Ajuste de padding para evitar que el contenido toque los bordes en móviles */
     padding: 4rem 2rem calc(7rem + env(safe-area-inset-bottom, 0px));
     min-height: 100vh;
     box-sizing: border-box;
+    
+    /* MEJORA DE LEGIBILIDAD: Capa oscura sobre el fondo */
+    background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('/fondoGI.JPG');
+    background-size: 400px 263px;
+    background-repeat: repeat;
+    background-position: top left;
+    background-attachment: fixed;
 }
 
-.menu-header { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; }
+.menu-header { 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    gap: 0.5rem; 
+}
 
 .menu-titulo {
-    font-size: 3rem;
+    font-size: 3.5rem; /* Un poco más grande para impacto */
     font-weight: 800;
     margin: 0;
     letter-spacing: -0.02em;
-    color: var(--text-primary);
+    color: var(--accent); /* Usamos el naranja para el título principal */
+    
+    /* MEJORA: Sombra de texto para despegarlo del fondo */
+    text-shadow: 0 4px 10px rgba(0, 0, 0, 0.9);
+    text-transform: uppercase;
 }
 
 .menu-subtitulo {
-    font-size: 1rem;
-    color: var(--text-secondary);
+    font-size: 1.1rem;
+    color: var(--text-primary); /* Texto principal para mejor contraste */
     margin: 0;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
 }
 
 .menu-acciones {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.8rem;
+    gap: 1rem;
     width: 100%;
     max-width: 320px;
 }
@@ -42,21 +59,22 @@
     justify-content: center;
     gap: 0.6rem;
     width: 100%;
-    padding: 0.9rem 1.5rem;
+    padding: 1rem 1.5rem;
     border-radius: 999px;
     background-color: var(--accent);
-    color: white;
-    font-size: 1rem;
-    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 1.05rem;
+    font-weight: 700;
     text-decoration: none;
     box-shadow: 0 4px 20px var(--accent-glow);
-    transition: background-color 0.2s, transform 0.2s;
+    transition: all 0.2s ease;
     touch-action: manipulation;
 }
+
 .menu-btn-primario:hover {
     background-color: var(--accent-hover);
-    transform: scale(1.02);
-    color: white;
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 8px 25px var(--accent-glow);
 }
 
 .menu-btn-secundario {
@@ -64,71 +82,45 @@
     align-items: center;
     justify-content: center;
     width: 100%;
-    padding: 0.8rem 1.5rem;
+    padding: 0.85rem 1.5rem;
     border-radius: 999px;
-    background-color: transparent;
+    background-color: var(--bg-card-dark); /* Fondo sólido oscuro para legibilidad */
     border: 1px solid var(--border);
     color: var(--text-secondary);
     font-size: 0.95rem;
     font-weight: 500;
     text-decoration: none;
-    transition: border-color 0.2s, color 0.2s;
+    transition: all 0.2s;
     box-sizing: border-box;
-    touch-action: manipulation;
 }
+
 .menu-btn-secundario:hover {
-    border-color: var(--border-hover);
+    border-color: var(--accent);
     color: var(--text-primary);
+    background-color: var(--bg-card);
 }
 
 .menu-legal {
-    font-size: 0.72rem;
+    font-size: 0.75rem;
     color: var(--text-muted);
     text-align: center;
-    max-width: 320px;
-    line-height: 1.5;
-    margin: 0;
+    max-width: 380px;
+    line-height: 1.6;
+    margin-top: 2rem;
+    /* Fondo semi-transparente muy sutil para el bloque de texto */
+    background: rgba(0, 0, 0, 0.3);
+    padding: 1rem;
+    border-radius: 12px;
 }
 
-.menu-btn-patreon {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.55rem 1.2rem;
-    border-radius: 999px;
-    background: transparent;
-    border: 1px solid #f96854;
-    color: #f96854;
-    font-size: 0.85rem;
-    font-weight: 500;
-    text-decoration: none;
-    transition: background 0.2s, color 0.2s;
-}
-.menu-btn-patreon:hover {
-    background: #f96854;
-    color: white;
-}
-
-/* Móviles pequeños */
-@media (max-width: 768px) {
-    .menu-acciones { margin-bottom: 1rem; }
-    .menu-legal { padding-bottom: env(safe-area-inset-bottom, 0px); }
-}
+/* --- RESPONSIVIDAD --- */
 
 @media (max-width: 360px) {
-    .menu-contenedor { padding: 2.5rem 1rem calc(7.5rem + env(safe-area-inset-bottom, 0px)); gap: 1.8rem; }
-    .menu-titulo { font-size: 2.2rem; }
-    .menu-acciones { max-width: 100%; margin-bottom: 1.25rem; }
-    .menu-btn-primario, .menu-btn-secundario { font-size: 0.9rem; padding: 0.75rem 1rem; }
+    .menu-titulo { font-size: 2.5rem; }
+    .menu-contenedor { padding-top: 2rem; }
 }
 
-/* TV y pantallas grandes */
 @media (min-width: 1200px) {
-    .menu-contenedor { gap: 3.5rem; padding: 6rem 2rem; }
-    .menu-titulo { font-size: 4.5rem; }
-    .menu-subtitulo { font-size: 1.3rem; }
-    .menu-acciones { max-width: 420px; }
-    .menu-btn-primario { font-size: 1.2rem; padding: 1.1rem 2rem; }
-    .menu-btn-secundario { font-size: 1.1rem; padding: 1rem 2rem; }
-    .menu-legal { font-size: 0.85rem; max-width: 420px; }
+    .menu-titulo { font-size: 5rem; }
+    .menu-acciones { max-width: 400px; }
 }
