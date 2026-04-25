@@ -52,23 +52,45 @@ a:hover {
 
 body {
   margin: 0;
-  background-image: url('/fondoGI.JPG');
-  
-  /* 1. Cambiamos 'cover' por 'auto' o un tamaño específico */
-  background-size: 400px 263px; /* O 'auto' para mantener el tamaño original de la imagen */ 
-  
-  /* 2. Cambiamos 'no-repeat' por 'repeat' */
-  background-repeat: repeat; 
-  
-  /* 3. Mantenemos el resto igual */
-  background-position: top left;
-  background-attachment: fixed;
+  position: relative;
   width: 100%;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  
+  /* Imagen de fondo */
+  background-image: url('/fondoGI.JPG');
+  background-size: 400px 263px;
+  background-repeat: repeat;
+  background-position: top left;
+  
+  /* Overlay oscuro para aumentar contraste */
+  background-color: rgba(14, 14, 14, 0.85);
+  background-blend-mode: multiply;
+  
+  z-index: -2;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0, 0.4) 100%);
+  z-index: -1;
 }
 
 button {

@@ -4,7 +4,15 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 1rem;
+    gap: 1.5rem;
+}
+
+.asignacion-imagen-final {
+    max-width: 100%;
+    height: auto;
+    border-radius: 16px;
+    object-fit: contain;
+    width: 400px;
 }
 
 .asignacion-contenedor {
@@ -96,6 +104,17 @@
     .ver-rol-contenedor { padding: 1.5rem 1rem; }
     .ver-rol-nombre { font-size: 1.3rem; }
     .asignacion-input { font-size: 1rem; }
+    .asignacion-imagen-final { max-width: 150px; }
+}
+
+/* Pantallas medianas */
+@media (min-width: 768px) {
+    .asignacion-imagen-final { max-width: 500px; }
+}
+
+/* Pantallas grandes */
+@media (min-width: 1024px) {
+    .asignacion-imagen-final { max-width: 650px; }
 }
 
 /* TV y pantallas grandes */

@@ -18,9 +18,9 @@
 
 /* Estado Hover: Cuando el mouse está encima */
 .btn-primario:hover:not(:disabled) {
-    background-color: var(--accent-hover);
-    transform: scale(1.02); /* Se agranda un poco (2%) */
-    box-shadow: 0 6px 25px var(--accent-glow); /* El brillo se intensifica */
+    background-color: #c45723;
+    transform: none;
+    box-shadow: 0 4px 20px var(--accent-glow);
 }
 
 /* Estado al hacer Clic (Active) */

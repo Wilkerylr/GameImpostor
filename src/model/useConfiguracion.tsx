@@ -31,13 +31,24 @@ export function useConfiguracion() {
     const [leaderboardActivo, setLeaderboardActivoState] = useState(() => leerBoolean('leaderboardActivo', false));
 
     const setJugadores = (valor: number) => {
-        localStorage.setItem('jugadores', String(valor));
-        setJugadoresState(valor);
+        // Validar rango permitido
+        const valorSeguro = Math.max(3, Math.min(20, Math.round(valor)));
+        localStorage.setItem('jugadores', String(valorSeguro));
+        setJugadoresState(valorSeguro);
+        
+        // Ajustar automaticamente impostores si excede el nuevo maximo permitido
+        const maxImpostoresPermitido = Math.min(3, Math.floor(valorSeguro / 2));
+        if (impostores > maxImpostoresPermitido) {
+            setImpostores(maxImpostoresPermitido);
+        }
     };
 
     const setImpostores = (valor: number) => {
-        localStorage.setItem('impostores', String(valor));
-        setImpostoresState(valor);
+        // Validar rango y logica de juego
+        const maxPermitido = Math.min(3, Math.floor(jugadores / 2));
+        const valorSeguro = Math.max(1, Math.min(maxPermitido, Math.round(valor)));
+        localStorage.setItem('impostores', String(valorSeguro));
+        setImpostoresState(valorSeguro);
     };
 
     const setNombres = (valor: string[]) => {

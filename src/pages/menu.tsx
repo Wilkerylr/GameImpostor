@@ -13,8 +13,7 @@ export default function Menu() {
     return (
         <div className="menu-contenedor">
             <div className="menu-header">
-                <h1 className="menu-titulo">Game Impostor</h1>
-                <p className="menu-subtitulo">¿Quién es el impostor?</p>
+                <img src="./tituloMenu.png" alt="Game Impostor" className="menu-titulo-imagen" />
             </div>
 
             <div className="menu-acciones">

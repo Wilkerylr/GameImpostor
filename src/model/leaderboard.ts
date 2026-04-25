@@ -10,6 +10,7 @@ const STORAGE_KEY = 'leaderboard_puntos';
 
 /**
  * Calcula los puntos según rol, tamaño de la partida y el rol ganador.
+ * Sistema balanceado proporcional para cualquier cantidad de jugadores.
  */
 export function calculatePoints(
   role: Role,
@@ -23,17 +24,16 @@ export function calculatePoints(
   }
 
   if (winnerRole === 'inocentes') {
+    // Puntos fijos por victoria de inocentes: 2 puntos por partida ganada
     return 2;
   }
 
-  // Puntos para impostores según condiciones específicas de 5 jugadores.
   if (winnerRole === 'impostor') {
-    if (totalPlayers === 5 && totalImpostors === 1) {
-      return 8;
-    }
-    if (totalPlayers === 5 && totalImpostors === 2) {
-      return 3;
-    }
+    // Sistema balanceado: puntos inversamente proporcional a cantidad de impostores
+    // Mientras menos impostores hayan, mas dificil es ganar, mas puntos otorga
+    const baseImpostorPoints = Math.floor( (totalPlayers / totalImpostors) * 1.5 );
+    // Limites razonables: minimo 2, maximo 10 puntos
+    return Math.max(2, Math.min(10, baseImpostorPoints));
   }
 
   return 0;

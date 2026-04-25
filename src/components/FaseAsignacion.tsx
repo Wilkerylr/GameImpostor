@@ -29,14 +29,8 @@ export default function FaseAsignacion({ avanzarFase, asignacion }: Props) {
     if (terminado) return (
         <>
             <BotonSalir />
-            <h1>Todos los roles han sido asignados</h1>
             <div className="asignacion-lupa-contenedor">
-                <svg width="200" height="200" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="10" cy="10" r="7" stroke="#646cff" strokeWidth="1.5" />
-                    <circle cx="10" cy="10" r="7" fill="#646cff" fillOpacity="0.08" />
-                    <circle cx="7.5" cy="7.5" r="1.5" fill="#646cff" fillOpacity="0.4" />
-                    <line x1="15.5" y1="15.5" x2="27" y2="27" stroke="#646cff" strokeWidth="2.5" strokeLinecap="round" />
-                </svg>
+                <img src="./rolesAsignados.png" alt="Roles asignados" className="asignacion-imagen-final" width="200" height="200" />
                 <BotonPrimario nombre="Iniciar Partida" onClick={avanzarFase} />
             </div>
         </>

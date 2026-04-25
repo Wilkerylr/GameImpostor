@@ -8,6 +8,7 @@ import BotonPrimario from './BotonPrimario';
 import ContadorConfig from './ContadorConfig';
 import BotonSalir from './BotonSalir';
 import ToggleTemporizador from './ToggleTemporizador';
+import ToggleLeaderboard from './ToggleLeaderboard';
 import { useConfiguracion } from '../model/useConfiguracion';
 import { useTemas } from '../model/useTemas';
 import '../styles/components/ContadorConfig.css';
@@ -19,11 +20,13 @@ interface Props {
 }
 
 export default function FaseConfig({ avanzarFase, configuracion }: Props) {
-    const { jugadores, setJugadores, impostores, setImpostores, temporizadorActivo, setTemporizadorActivo, tiempoDiscusion, setTiempoDiscusion } = configuracion;
+    const { jugadores, setJugadores, impostores, setImpostores, temporizadorActivo, setTemporizadorActivo, tiempoDiscusion, setTiempoDiscusion, leaderboardActivo, setLeaderboardActivo } = configuracion;
     const { temas, temaActivo, activarTema, desactivarTema } = useTemas();
     const nombresTemas = Object.keys(temas);
 
-    const impostoresValido = impostores >= 1 && impostores <= 3 && impostores < jugadores - 1;
+    // Validacion consistente con la logica del hook useConfiguracion
+    const maxImpostoresPermitido = Math.min(3, Math.floor(jugadores / 2));
+    const impostoresValido = impostores >= 1 && impostores <= maxImpostoresPermitido;
 
     return (
         <div className="config-contenedor">
@@ -78,6 +81,11 @@ export default function FaseConfig({ avanzarFase, configuracion }: Props) {
                     tiempo={tiempoDiscusion}
                     setActivo={setTemporizadorActivo}
                     setTiempo={setTiempoDiscusion}
+                />
+
+                <ToggleLeaderboard
+                    activo={leaderboardActivo}
+                    setActivo={setLeaderboardActivo}
                 />
             </div>
 

@@ -20,28 +20,17 @@
     display: flex; 
     flex-direction: column; 
     align-items: center; 
-    gap: 0.5rem; 
+    margin-bottom: -6rem;
+    position: relative;
+    z-index: 1;
 }
 
-.menu-titulo {
-    font-size: 3.5rem; /* Un poco más grande para impacto */
-    font-weight: 800;
-    margin: 0;
-    letter-spacing: -0.02em;
-    color: var(--accent); /* Usamos el naranja para el título principal */
-    
-    /* MEJORA: Sombra de texto para despegarlo del fondo */
-    text-shadow: 0 4px 10px rgba(0, 0, 0, 0.9);
-    text-transform: uppercase;
-}
-
-.menu-subtitulo {
-    font-size: 1.1rem;
-    color: var(--text-primary); /* Texto principal para mejor contraste */
-    margin: 0;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+.menu-titulo-imagen {
+    max-width: 100%;
+    height: auto;
+    object-fit: contain;
+    width: 780px;
+    filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.6));
 }
 
 .menu-acciones {
@@ -51,6 +40,8 @@
     gap: 1rem;
     width: 100%;
     max-width: 320px;
+    position: relative;
+    z-index: 10;
 }
 
 .menu-btn-primario {
@@ -72,9 +63,10 @@
 }
 
 .menu-btn-primario:hover {
-    background-color: var(--accent-hover);
-    transform: translateY(-3px) scale(1.02);
-    box-shadow: 0 8px 25px var(--accent-glow);
+    background-color: #6d0b0b;
+    color: var(--text-primary);
+    transform: none;
+    box-shadow: 0 8px 25px var(#6d0b0b);
 }
 
 .menu-btn-secundario {
@@ -116,11 +108,22 @@
 /* --- RESPONSIVIDAD --- */
 
 @media (max-width: 360px) {
-    .menu-titulo { font-size: 2.5rem; }
     .menu-contenedor { padding-top: 2rem; }
+    .menu-titulo-imagen { max-width: 250px; }
+    .menu-header { margin-bottom: -2.5rem; }
+}
+
+@media (max-width: 500px) {
+    .menu-titulo-imagen { max-width: 350px; }
+    .menu-header { margin-bottom: -3.5rem; }
+}
+
+@media (min-width: 768px) {
+    .menu-titulo-imagen { max-width: 600px; }
 }
 
 @media (min-width: 1200px) {
-    .menu-titulo { font-size: 5rem; }
     .menu-acciones { max-width: 400px; }
+    .menu-titulo-imagen { max-width: 850px; }
+    .menu-header { margin-bottom: -7rem; }
 }

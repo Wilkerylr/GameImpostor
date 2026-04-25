@@ -1,5 +1,6 @@
 import type { LeaderboardEntry } from '../model/leaderboard';
 import { useLeaderboard } from '../model/useLeaderboard';
+import { useState } from 'react';
 import styles from '../styles/components/TablaPuntuacion.module.css';
 
 interface Props {
@@ -13,6 +14,7 @@ interface Props {
  */
 export default function TablaPuntuacion({ entries, showResetButton = true }: Props) {
   const { leaderboard, resetLeaderboard } = useLeaderboard();
+  const [mostrarExplicacion, setMostrarExplicacion] = useState(false);
   const tabla = entries ?? leaderboard;
 
   return (
@@ -42,9 +44,36 @@ export default function TablaPuntuacion({ entries, showResetButton = true }: Pro
             <tr>
               <th>Rango</th>
               <th>Nombre</th>
-              <th className={styles['tabla-puntuacion-puntos-heading']}>Puntos Totales</th>
+              <th className={styles['tabla-puntuacion-puntos-heading']}>
+                Puntos Totales
+                <button 
+                  type="button" 
+                  className={styles['tabla-puntuacion-info-btn']}
+                  onClick={() => setMostrarExplicacion(!mostrarExplicacion)}
+                  title="¿Como se calculan los puntos?"
+                >
+                  ⓘ
+                </button>
+              </th>
             </tr>
           </thead>
+          
+          {mostrarExplicacion && (
+            <tfoot>
+              <tr>
+                <td colSpan={3} className={styles['tabla-puntuacion-explicacion']}>
+                  <p><strong>Sistema de puntuación balanceado:</strong></p>
+                  <ul>
+                    <li>✅ <strong>Inocentes ganadores:</strong> 2 puntos fijos por partida</li>
+                    <li>🎭 <strong>Impostores ganadores:</strong> Puntos inversamente proporcional</li>
+                    <li>📐 Formula: <code>puntos = (jugadores / impostores) * 1.5</code></li>
+                    <li>⚖️ Mientras menos impostores, mas dificil ganar, mas puntos recibes</li>
+                    <li>🔒 Rango: Minimo 2, Maximo 10 puntos por victoria</li>
+                  </ul>
+                </td>
+              </tr>
+            </tfoot>
+          )}
           <tbody>
             {tabla.length === 0 ? (
               <tr>
