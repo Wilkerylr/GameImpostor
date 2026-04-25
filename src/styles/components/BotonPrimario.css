@@ -1,26 +1,49 @@
-/* Botón primario pill con color acento. Usado como acción principal en fases del juego. */
+/* Botón primario Art Deco acorde a la estetica Limelight */
 .btn-primario {
-    padding: 0.85rem 2.5rem;
-    border-radius: 999px; /* Botón tipo 'píldora' o redondeado */
-    background-color: var(--accent); /* El naranja quemado */
-    border: none;
-    color: var(--text-primary); /* Mejor usar tu variable de texto que 'white' fijo */
+    padding: 0.9rem 2.8rem;
+    border-radius: 4px;
+    background: linear-gradient(135deg, #d4622a 0%, #b8501f 100%);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-primary);
     font-size: 1rem;
-    font-weight: 600;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
     cursor: pointer;
     
-    /* Transiciones suaves para color y tamaño */
-    transition: background-color 0.2s, transform 0.2s, box-shadow 0.2s;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     
-    /* Efecto de resplandor usando tu variable de glow */
-    box-shadow: 0 4px 20px var(--accent-glow);
+    box-shadow: 
+      0 4px 15px rgba(212, 98, 42, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.15),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+      
+    position: relative;
+    overflow: hidden;
 }
 
-/* Estado Hover: Cuando el mouse está encima */
+.btn-primario::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+    transition: left 0.5s;
+}
+
+/* Estado Hover: Efecto brillo dinamico */
 .btn-primario:hover:not(:disabled) {
-    background-color: #c45723;
-    transform: none;
-    box-shadow: 0 4px 20px var(--accent-glow);
+    transform: translateY(-2px);
+    box-shadow: 
+      0 8px 25px rgba(212, 98, 42, 0.45),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.25);
+}
+
+.btn-primario:hover:not(:disabled)::before {
+    left: 100%;
 }
 
 /* Estado al hacer Clic (Active) */
